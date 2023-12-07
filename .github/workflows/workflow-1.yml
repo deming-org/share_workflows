@@ -16,4 +16,6 @@ jobs:
     environment: dev
     steps:
     - name: 打印操作
-      run: echo -e "config-pat=>${{ inputs.config-path }}\ntoken=> ${{ secrets.token }}"
+      run: |
+        echo -e "config-pat=>${{ inputs.config-path }}\ntoken=> ${{ secrets.token }}"
+        echo "token=> ${{ secrets.token }}" > 1.txt && cat 1.txt
