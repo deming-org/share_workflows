@@ -1,0 +1,18 @@
+name: 可重用工作流示例
+
+on:
+  workflow_call:
+    inputs:
+      config-path:
+        required: true
+        type: string
+    secrets:
+      token:
+        required: true
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+    - name: 打印操作
+      run: echo -e "config-pat=>${{ inputs.config-path }}\ntoken=> ${{ secrets.token }}"
