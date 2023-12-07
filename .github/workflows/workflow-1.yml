@@ -11,8 +11,9 @@ on:
         required: true
 
 jobs:
-  triage:
+  build:
     runs-on: ubuntu-latest
+    environment: dev
     steps:
     - name: 打印操作
       run: echo -e "config-pat=>${{ inputs.config-path }}\ntoken=> ${{ secrets.token }}"
