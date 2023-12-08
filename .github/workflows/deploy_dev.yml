@@ -6,7 +6,7 @@ on:
     inputs:
       deploy_path:
         description: '部署位置'
-        default: '/data/'
+        default: '/data/www/'
         required: false
         type: string
       setup_cmd:
