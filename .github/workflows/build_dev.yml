@@ -34,43 +34,43 @@ jobs:
     steps:
       - name: 打印变量
         run: echo "repo_type=${{ inputs.repo_type }}\trepository=${{ inputs.repository }}\tref=${{ inputs.ref }}\nrepo_token=${{ secrets.repo_token }}"
-      - name: 拉取代码 - svn仓库
-        if: ${{ inputs.repo_type == 'svn' }}
+      # - name: 拉取代码 - svn仓库
+      - if: ${{ inputs.repo_type == 'svn' }}
         run: echo "我拉取了svn仓库"
-      - name: 拉取代码 - git仓库
-        if: ${{ inputs.repo_type == '' }}
-        uses: actions/checkout@v4.1.1
-        with: 
-          repository: ${{ if inputs.repository == '' && github.repository || inputs.repository }}
-          ref: ${{ if inputs.ref == '' && github.REF_NAME || inputs.ref }}
-          token: ${{ if secrets.repo_token == '' && github.token || secrets.repo_token }}
-      - name: 设置编译环境（python）
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9.13'
-      - name: 安装依赖（测试代码需要）
-        run: |
-          python -c "import sys; print(sys.version)"
-          python -m pip install --upgrade pip
-          # pip install -r requirements.txt
-          echo "hello" > $(date +"%Y_%m_%d_%H_%M_%S").txt
-      - name: 执行编译
-        run: |
-          echo -e "job_id：$GITHUB_JOB  事件：$GITHUB_EVENT_NAME  操作人：$GITHUB_ACTOR - $GITHUB_ACTOR_ID"
-          echo "workflow链接：$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/workflows/${GITHUB_WORKFLOW}.yml"
-          echo -e "本次运行详细链接：$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-          echo -e "配置变量-环境级别：${{ vars.ENV }}"
-          pwd && ls -a
-          echo -e "\033[36m我是编译脚本，执行完成\033[0m" 
-      - name: 测试代码
-        run: python app.py
-      - name: 打包压缩
-        run: |
-          rm -rf .git*
-          tar -zcvf ${{ github.WORKFLOW }}_${{ vars.env }}_${{ github.sha }}.tgz *
-          ls -l ${{ github.WORKFLOW }}_${{ vars.env }}_${{ github.sha }}.tgz && tar -tzvf ${{ github.WORKFLOW }}_${{ vars.env }}_${{ github.sha }}.tgz
-      - name: 上传到artifact
-        uses: actions/upload-artifact@v3.1.3
-        with:
-          name: app-build
-          path: ${{ github.WORKFLOW }}_${{ vars.env }}_${{ github.sha }}.tgz
+      # - name: 拉取代码 - git仓库
+      #   if: ${{ inputs.repo_type == '' }}
+      #   uses: actions/checkout@v4.1.1
+      #   with: 
+      #     repository: ${{ if inputs.repository == '' && github.repository || inputs.repository }}
+      #     ref: ${{ if inputs.ref == '' && github.REF_NAME || inputs.ref }}
+      #     token: ${{ if secrets.repo_token == '' && github.token || secrets.repo_token }}
+      # - name: 设置编译环境（python）
+      #   uses: actions/setup-python@v4
+      #   with:
+      #     python-version: '3.9.13'
+      # - name: 安装依赖（测试代码需要）
+      #   run: |
+      #     python -c "import sys; print(sys.version)"
+      #     python -m pip install --upgrade pip
+      #     # pip install -r requirements.txt
+      #     echo "hello" > $(date +"%Y_%m_%d_%H_%M_%S").txt
+      # - name: 执行编译
+      #   run: |
+      #     echo -e "job_id：$GITHUB_JOB  事件：$GITHUB_EVENT_NAME  操作人：$GITHUB_ACTOR - $GITHUB_ACTOR_ID"
+      #     echo "workflow链接：$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/workflows/${GITHUB_WORKFLOW}.yml"
+      #     echo -e "本次运行详细链接：$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+      #     echo -e "配置变量-环境级别：${{ vars.ENV }}"
+      #     pwd && ls -a
+      #     echo -e "\033[36m我是编译脚本，执行完成\033[0m" 
+      # - name: 测试代码
+      #   run: python app.py
+      # - name: 打包压缩
+      #   run: |
+      #     rm -rf .git*
+      #     tar -zcvf ${{ github.WORKFLOW }}_${{ vars.env }}_${{ github.sha }}.tgz *
+      #     ls -l ${{ github.WORKFLOW }}_${{ vars.env }}_${{ github.sha }}.tgz && tar -tzvf ${{ github.WORKFLOW }}_${{ vars.env }}_${{ github.sha }}.tgz
+      # - name: 上传到artifact
+      #   uses: actions/upload-artifact@v3.1.3
+      #   with:
+      #     name: app-build
+      #     path: ${{ github.WORKFLOW }}_${{ vars.env }}_${{ github.sha }}.tgz
