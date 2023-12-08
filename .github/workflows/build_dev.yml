@@ -27,7 +27,7 @@ on:
 # 组成工作流的jobs， 包含一个以上的job
 jobs:
   build:
-    name: 编译
+    name: 编译-python项目
     runs-on: ubuntu-latest
     # 环境级别的配置变量必须指定, 无法使用变量动态配置-2023-12-08
     environment: dev
