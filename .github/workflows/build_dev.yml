@@ -41,9 +41,9 @@ jobs:
         name: 拉取代码 - git仓库
         uses: actions/checkout@v4.1.1
         with: 
-          repository: ${{ if inputs.repository == '' && github.repository || inputs.repository }}
-          ref: ${{ if inputs.ref == '' && github.REF_NAME || inputs.ref }}
-          token: ${{ if secrets.repo_token == '' && github.token || secrets.repo_token }}
+          repository: ${{ inputs.repository == '' && github.repository || inputs.repository }}
+          ref: ${{ inputs.ref == '' && github.REF_NAME || inputs.ref }}
+          token: ${{ secrets.repo_token == '' && github.token || secrets.repo_token }}
       - name: 设置编译环境（python）
         uses: actions/setup-python@v4
         with:
