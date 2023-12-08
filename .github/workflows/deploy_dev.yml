@@ -30,34 +30,34 @@ jobs:
           # 制品名称和build环节保持一致
           name: app-build
       - name: 上传服务器
-        run: |
-          pwd
-          curl -s https://www.cip.cc/; echo -e "\n/usr/local/sbin/deploy -path=${{ inputs.deploy_path }} -setup_cmd=${{ inputs.setup_cmd }} -restart_cmd=${{ inputs.restart_cmd }}"
-          ls -a && echo -e "\033[36m上传服务器完成\033[0m"
-        # uses: easingthemes/ssh-deploy@v4.1.10
-        # with:
-        #   # Private key part of an SSH key pair
-        #   SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
-        #   # Remote host
-        #   REMOTE_HOST: ${{ secrets.SSH_HOST }}
-        #   # Remote user
-        #   REMOTE_USER: ${{ secrets.SSH_USER }}
-        #   # 源目录，目录相对于`$GITHUB_WORKSPACE` root, eg: `dist/`
-        #   SOURCE: ./${{ github.WORKFLOW }}_${{ vars.env }}_${{ github.sha }}.tgz
-        #   # 目标目录
-        #   TARGET: /data/
-        #   # # Remote port
-        #   # REMOTE_PORT: 22
-        #   # # Arguments to pass to rsync
-        #   # ARGS: # optional, default is -rlgoDzvc -i
-        #   # # An array of ssh arguments, they must be prefixed with -o and separated by a comma, for example: -o SomeArgument=no, -o SomeOtherArgument=5 
-        #   # SSH_CMD_ARGS: # optional, default is -o StrictHostKeyChecking=no
-        #   # # paths to exclude separated by `,`, ie: `/dist/, /node_modules/`
-        #   # EXCLUDE: # optional, default is 
-        #   # # Script to run on host machine before rsync
-        #   # SCRIPT_BEFORE: # optional, default is 
-        #   # Script to run on host machine after rsync
-        #   SCRIPT_AFTER: curl -s https://www.cip.cc/; echo "/usr/local/sbin/deploy -path=${{ inputs.deploy_path }} -setup_cmd=${{ inputs.setup_cmd }} -restart_cmd=${{ inputs.restart_cmd }}"
+        # run: |
+        #   pwd
+        #   curl -s https://www.cip.cc/; echo -e "\n/usr/local/sbin/deploy -path=${{ inputs.deploy_path }} -setup_cmd=${{ inputs.setup_cmd }} -restart_cmd=${{ inputs.restart_cmd }}"
+        #   ls -a && echo -e "\033[36m上传服务器完成\033[0m"
+        uses: easingthemes/ssh-deploy@v4.1.10
+        with:
+          # Private key part of an SSH key pair
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+          # Remote host
+          REMOTE_HOST: ${{ secrets.SSH_HOST }}
+          # Remote user
+          REMOTE_USER: ${{ secrets.SSH_USER }}
+          # 源目录，目录相对于`$GITHUB_WORKSPACE` root, eg: `dist/`
+          SOURCE: ./${{ github.WORKFLOW }}_${{ vars.env }}_${{ github.sha }}.tgz
+          # 目标目录
+          TARGET: /data/
+          # # Remote port
+          # REMOTE_PORT: 22
+          # # Arguments to pass to rsync
+          # ARGS: # optional, default is -rlgoDzvc -i
+          # # An array of ssh arguments, they must be prefixed with -o and separated by a comma, for example: -o SomeArgument=no, -o SomeOtherArgument=5 
+          # SSH_CMD_ARGS: # optional, default is -o StrictHostKeyChecking=no
+          # # paths to exclude separated by `,`, ie: `/dist/, /node_modules/`
+          # EXCLUDE: # optional, default is 
+          # # Script to run on host machine before rsync
+          # SCRIPT_BEFORE: # optional, default is 
+          # Script to run on host machine after rsync
+          SCRIPT_AFTER: curl -s https://www.cip.cc/; echo -e "\n/usr/local/sbin/deploy -path=${{ inputs.deploy_path }} -setup_cmd=${{ inputs.setup_cmd }} -restart_cmd=${{ inputs.restart_cmd }}"
       - name: 飞书通知
         # if: ${{ always() }}
         if: ${{ !cancelled() }}
