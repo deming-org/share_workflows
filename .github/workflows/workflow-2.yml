@@ -1,14 +1,8 @@
 name: 可重用工作流示例 - 私有仓库
 
 on:
-  workflow_call:
-    inputs:
-      name:
-        required: true
-        type: string
-    secrets:
-      token:
-        required: true
+  repository_dispatch:
+    types: [start-workflow]
 
 jobs:
   build:
@@ -16,9 +10,11 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4.1.1
 
     - name: Run job
       run: |
-        pwd && ls
-        echo "Hello, ${{ inputs.name }}"
+        pwd && ls -t1
+        echo "Hello, ${{ github.event.client_payload.name }}"
+
+
