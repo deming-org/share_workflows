@@ -9,6 +9,7 @@ jobs:
     name: 编译
     uses: ./.github/workflows/build_python_dev.yml
     secrets: inherit
+  
   deploy:
     name: 主机部署
     needs:
