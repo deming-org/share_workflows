@@ -1,0 +1,24 @@
+name: 可重用工作流示例 - 私有仓库
+
+on:
+  workflow_call:
+    inputs:
+      name:
+        required: true
+        type: string
+    secrets:
+      token:
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Run job
+      run: |
+        pwd && ls
+        echo "Hello, ${{ inputs.name }}"
