@@ -1,4 +1,4 @@
-name: 可重用工作流示例
+name: 可重用工作流示例 - 公共仓库
 
 on:
   workflow_call:
