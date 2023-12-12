@@ -1,0 +1,23 @@
+# 部署python-demo仓库代码到开发环境
+name: python-demo-dev
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    name: 编译
+    uses: .github/workflows/python_build_dev.yml@main
+    secrets: inherit
+  deploy:
+    name: 主机部署
+    needs:
+      - build
+    uses: .github/workflows/deploy_dev.yml@main
+    with:
+      # 配置参数通过流水线管理系统获取
+      host_group: python-demo-dev
+      deploy_path: /data/python-demo/
+      setup_cmd: 'bash setup.sh'
+      restart_cmd: 'bash restart.sh'
+    secrets: inherit
