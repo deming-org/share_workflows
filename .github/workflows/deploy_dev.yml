@@ -4,6 +4,10 @@ name: 公共部署流程-开发环境
 on:
   workflow_call:
     inputs:
+      host_group:
+        description: '主机组'
+        required: true
+        type: string
       deploy_path:
         description: '部署位置'
         default: '/data/www/'
@@ -21,43 +25,19 @@ on:
 jobs:
   deploy:
     name: 部署
-    runs-on: ubuntu-latest
-    environment: dev
+    runs-on: self-hosted
+    # environment: dev
     steps:
       - name: 下载制品
         uses: actions/download-artifact@v3.0.2
         with:
           # 制品名称和build环节保持一致
-          name: app-build
-      - name: 上传服务器
-        # run: |
-        #   pwd
-        #   curl -s https://www.cip.cc/; echo -e "\n/usr/local/sbin/deploy -path=${{ inputs.deploy_path }} -setup_cmd=${{ inputs.setup_cmd }} -restart_cmd=${{ inputs.restart_cmd }}"
-        #   ls -a && echo -e "\033[36m上传服务器完成\033[0m"
-        uses: easingthemes/ssh-deploy@v4.1.10
-        with:
-          # Private key part of an SSH key pair
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
-          # Remote host
-          REMOTE_HOST: ${{ secrets.SSH_HOST }}
-          # Remote user
-          REMOTE_USER: ${{ secrets.SSH_USER }}
-          # 源目录，目录相对于`$GITHUB_WORKSPACE` root, eg: `dist/`
-          SOURCE: ./${{ github.WORKFLOW }}_${{ vars.env }}_${{ github.sha }}.tgz
-          # 目标目录
-          TARGET: /data/
-          # # Remote port
-          # REMOTE_PORT: 22
-          # # Arguments to pass to rsync
-          # ARGS: # optional, default is -rlgoDzvc -i
-          # # An array of ssh arguments, they must be prefixed with -o and separated by a comma, for example: -o SomeArgument=no, -o SomeOtherArgument=5 
-          # SSH_CMD_ARGS: # optional, default is -o StrictHostKeyChecking=no
-          # # paths to exclude separated by `,`, ie: `/dist/, /node_modules/`
-          # EXCLUDE: # optional, default is 
-          # # Script to run on host machine before rsync
-          # SCRIPT_BEFORE: # optional, default is 
-          # Script to run on host machine after rsync
-          SCRIPT_AFTER: curl -s https://www.cip.cc/; echo -e "\n/usr/local/sbin/deploy -path=${{ inputs.deploy_path }} -setup_cmd=${{ inputs.setup_cmd }} -restart_cmd=${{ inputs.restart_cmd }}"
+          name: ${{ inputs.host_group }}.tgz
+      - name: 执行部署脚本
+        run: |
+          pwd
+          curl -s https://www.cip.cc/; echo -e "\n/usr/local/sbin/deploy -hosts=${{ inputs.host_group }} -path=${{ inputs.deploy_path }} -setup_cmd=${{ inputs.setup_cmd }} -restart_cmd=${{ inputs.restart_cmd }}"
+          ls -a && echo -e "\033[36m部署结束\033[0m"
       - name: 飞书通知
         # if: ${{ always() }}
         if: ${{ !cancelled() }}
@@ -66,7 +46,7 @@ jobs:
           INPUT_WEBHOOK: "${{ secrets.FS_ROBOT_TEST }}"
           INPUT_MESSAGE_TYPE: "post"
           INPUT_TITLE: "${{ github.WORKFLOW }}流水线通知"
-          INPUT_CONTENT: "仓库地址: ${{ github.SERVER_URL }}/${{ github.repository }}/tree/${{ github.REF_NAME }}\n发布环境：${{ vars.env }}\n执行人：${{ github.ACTOR }}\njob名称：${{ github.JOB }}\n运行状态：${{ job.status }}"
+          INPUT_CONTENT: "仓库地址: ${{ github.SERVER_URL }}/${{ github.repository }}/tree/${{ github.REF_NAME }}\n发布环境：开发环境\n执行人：${{ github.ACTOR }}\n运行状态：${{ job.status }}"
         run: |
           wget -q https://github.com/xiachufang/actions-feishu/releases/download/${{ env.ACTIONS_FEISHU_TAG }}/linux-amd64-actions-feishu.tar.gz
           tar zxf linux-amd64-actions-feishu.tar.gz feishu
