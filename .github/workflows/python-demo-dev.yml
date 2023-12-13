@@ -14,6 +14,13 @@ on:
       #   required: false
       #   type: environment
 
+env:
+  app_name: python-demo-dev
+  deploy_path: /data/python-demo/
+  deploy_user: aoemo
+  # setup_cmd: 'bash setup.sh'
+  # restart_cmd: 'bash restart.sh'
+
 jobs:
   build:
     name: 编译
@@ -21,21 +28,79 @@ jobs:
     secrets: inherit
     with:
       # 配置参数通过api动态获取
-      artifact_name: python-demo-dev
+      artifact_name: ${{ env.app_name }}
       github-server-url: 'https://github.com'
       repository: 'deming-org/python-demo'
       ref: ${{ inputs.ref }}
       repo_type: 'git'
   
-  deploy:
-    name: 主机部署
+  deploy_before:
+    name: 部署前置操作
     needs:
       - build
     uses: ./.github/workflows/deploy_dev.yml
     secrets: inherit
     with:
       # 配置参数通过api动态获取
-      host_group: python-demo-dev
+      host_group:  ${{ env.app_name }}
       deploy_path: /data/python-demo/
       setup_cmd: 'bash setup.sh'
       restart_cmd: 'bash restart.sh'
+  
+  deploy:
+    name: 主机部署
+    needs:
+      - deploy_before
+    runs-on: self-hosted:
+    strategy:
+      matrix:
+        host: ['172.31.94.49', '172.31.94.47']
+    steps:
+      - name: 执行部署脚本
+        uses: easingthemes/ssh-deploy@v5.0.0
+        with:
+          REMOTE_HOST: ${{ matrix.host }}
+          # REMOTE_PORT: 22
+          REMOTE_USER: ${{ secrets.SSH_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+          SOURCE: ${{ github.WORKFLOW }}/${{ env.app_name }}.tgz
+          TARGET: /tmp/app/
+          # # Arguments to pass to rsync
+          # ARGS: # optional, default is -rlgoDzvc -i
+          SCRIPT_BEFORE: |
+            whoami
+            ls -at1
+          SCRIPT_AFTER: |
+            cd ${{ env.deploy_path }} && rm -rf *
+            tar -zxvf ${{ env.app_name }}.tgz -C ${{ env.deploy_path }}
+            [[ -f setup.sh ]] && bash setup.sh
+            [[ -f restart.sh ]] && bash restart.sh
+            pwd && ls -al ${{ env.deploy_path }}
+            curl -s https://www.cip.cc/
+
+  notification:
+    name: 通知
+    needs:
+      - deploy
+    runs-on: self-hosted
+    steps:
+      - name: 飞书通知
+        working-directory: ${{ github.workflow }}
+        # if: ${{ always() }}
+        if: ${{ !cancelled() }}
+        env:
+          ACTIONS_FEISHU_TAG: 'v1.3.1'
+          INPUT_WEBHOOK: "${{ secrets.FS_ROBOT_TEST }}"
+          INPUT_MESSAGE_TYPE: "post"
+          INPUT_TITLE: "${{ github.WORKFLOW }}流水线通知"
+          INPUT_CONTENT: "仓库地址: ${{ github.SERVER_URL }}/${{ github.repository }}/tree/${{ github.REF_NAME }}\n发布环境：开发环境\n执行人：${{ github.ACTOR }}\n运行状态：${{ job.status }}"
+        run: |
+          wget -q https://github.com/xiachufang/actions-feishu/releases/download/${{ env.ACTIONS_FEISHU_TAG }}/linux-amd64-actions-feishu.tar.gz
+          tar zxf linux-amd64-actions-feishu.tar.gz feishu
+          ./feishu
+          
+      - name: 清理运行器
+        working-directory: ${{ github.workflow }}
+        run: |
+          pwd && ls -at1
+          rm -rf ./*
