@@ -6,9 +6,9 @@ on:
       - main
   workflow_dispatch:
 
-env:
-  # 重置当前workflow的工作目录
-  GITHUB_WORKSPACE: ${{ github.workspace}}/${{ github.workflow}}
+# env:
+#   # 默认环境变量只读，无法实现重置当前workflow的工作目录
+#   GITHUB_WORKSPACE: ${{ github.workspace}}/${{ github.workflow}}
 
 jobs:
   test1:
