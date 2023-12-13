@@ -32,7 +32,7 @@ jobs:
         uses: actions/download-artifact@v3.0.2
         with:
           # 制品名称和build环节保持一致
-          name: ${{ inputs.host_group }}.tgz
+          name: ${{ inputs.host_group }}
       - name: 执行部署脚本
         run: |
           pwd
