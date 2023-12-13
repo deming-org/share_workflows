@@ -12,8 +12,8 @@ on:
 
 defaults:
   run:
-    working-directory: ${{ github.WORKFLOW }}
-    
+    working-directory: ${{ github.workflow }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,6 +21,7 @@ jobs:
     steps:
     - name: 预建工作目录
       run: mkdir -pv $GITHUB_WORKFLOW
+      # run: mkdir -pv ${{ github.workflow }}
       working-directory: ./
       
     - name: 打印操作
