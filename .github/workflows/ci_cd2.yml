@@ -1,0 +1,22 @@
+name: ci_cd2
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test1:
+    name: 测试验证1
+    runs-on: ubuntu-latest
+    steps:
+      - name: 打印变量
+        run: |
+          pwd
+          echo -e "GITHUB_WORKFLOW: $GITHUB_WORKFLOW \t GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
+  # test2:
+  #   name: 测试验证2
+  #   # needs:
+  #   #   - test1
+  #   uses: ./.github/workflows/workflow-1.yml
+  #   secrets: inherit
+  #   with:
+  #     config-path: ./ci_cd.yml
