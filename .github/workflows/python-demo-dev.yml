@@ -34,29 +34,41 @@ jobs:
       ref: ${{ inputs.ref }}
       repo_type: 'git'
   
-  deploy_before:
-    name: 部署前置操作
-    needs:
-      - build
-    uses: ./.github/workflows/deploy_dev.yml
-    secrets: inherit
-    with:
-      # 配置参数通过api动态获取
-      host_group:  python-demo-dev
-      deploy_path: /data/python-demo/
-      setup_cmd: 'bash setup.sh'
-      restart_cmd: 'bash restart.sh'
+  # deploy_before:
+  #   name: 部署前置操作
+  #   needs:
+  #     - build
+  #   uses: ./.github/workflows/deploy_dev.yml
+  #   secrets: inherit
+  #   with:
+  #     # 配置参数通过api动态获取
+  #     host_group:  python-demo-dev
+  #     deploy_path: /data/python-demo/
+  #     setup_cmd: 'bash setup.sh'
+  #     restart_cmd: 'bash restart.sh'
   
   deploy:
     name: 主机部署
-    needs:
-      - deploy_before
+    # needs:
+    #   - deploy_before
     # runs-on: self-hosted
     runs-on: ubuntu-latest
     strategy:
+      max-parallel: 1
       matrix:
         host: ['47.242.225.68', '47.57.140.251']
     steps:
+      ######################### 使用github提供的运行器时使用 ######################### 
+      - name: 预建工作目录（）
+        run: mkdir -pv ${{ github.workflow }}
+      - name: 下载制品（使用github提供的运行器时使用）
+        uses: actions/download-artifact@v3.0.2
+        with:
+          # 制品名称和build环节保持一致
+          name: ${{ inputs.host_group }}
+          path: ${{ github.workflow }}
+      ######################### 使用github提供的运行器时使用 ######################### 
+          
       - name: 执行部署脚本
         uses: easingthemes/ssh-deploy@v5.0.0
         with:
@@ -101,7 +113,7 @@ jobs:
           tar zxf linux-amd64-actions-feishu.tar.gz feishu
           ./feishu
           
-      # - name: 清理运行器
+      # - name: 清理运行器（自己的托管器需要）
       #   working-directory: ${{ github.workflow }}
       #   run: |
       #     pwd && ls -at1
