@@ -43,8 +43,8 @@ jobs:
         run: |
           pwd
           curl -s https://www.cip.cc/; echo -e "\n/usr/local/sbin/deploy -hosts=${{ inputs.host_group }} -path=${{ inputs.deploy_path }} -setup_cmd=${{ inputs.setup_cmd }} -restart_cmd=${{ inputs.restart_cmd }}"
-          ls -a && echo -e "\033[36m部署结束\033[0m"
-          exit 1
+          ls -at1 ${{ github.workflow }} && echo -e "\033[36m部署结束\033[0m"
+          # exit 1
           
       - name: 飞书通知
         working-directory: ${{ github.workflow }}
