@@ -21,6 +21,7 @@ jobs:
     steps:
     - name: 预建工作目录
       run: mkdir scripts
+      working-directory: ./
       
     - name: 打印操作
       run: |
