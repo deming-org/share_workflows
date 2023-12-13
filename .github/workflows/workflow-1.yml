@@ -12,7 +12,7 @@ on:
 
 defaults:
   run:
-    working-directory: ./scripts
+    working-directory: scripts
     
 jobs:
   build:
