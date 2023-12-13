@@ -19,6 +19,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     steps:
+    - name: 预建工作目录
+      run: mkdir scripts
+      
     - name: 打印操作
       run: |
         pwd
