@@ -9,10 +9,11 @@ on:
     secrets:
       token:
         required: false
-
-defaults:
-  run:
-    working-directory: ${{ github.workflow }}
+        
+# defaults.run.working-directory无法使用变量，不满足需求
+# defaults:
+#   run:
+#     working-directory: ${{ github.workflow }}
 
 jobs:
   build:
@@ -20,11 +21,11 @@ jobs:
     environment: dev
     steps:
     - name: 预建工作目录
-      # run: mkdir -pv $GITHUB_WORKFLOW
+      # 默认的工作目录环境变量是GITHUB_WORKSPACE对应的值
       run: mkdir -pv ${{ github.workflow }}
-      working-directory: ./
       
     - name: 打印操作
+      working-directory: ${{ github.workflow }}
       run: |
         pwd
         echo -e "config-pat=>${{ inputs.config-path }}\ntoken=> ${{ secrets.token }}\nSSH_HOST=> ${{ secrets.SSH_HOST }}"
