@@ -63,4 +63,6 @@ jobs:
           
       - name: 清理运行器
         working-directory: ${{ github.workflow }}
-        run: rm -rf ./*
+        run: |
+          pwd && ls -at1
+          rm -rf ./*
