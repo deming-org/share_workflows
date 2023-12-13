@@ -49,8 +49,9 @@ jobs:
   
   deploy:
     name: 主机部署
-    # needs:
-    #   - deploy_before
+    needs:
+      # - deploy_before
+      - build
     # runs-on: self-hosted
     runs-on: ubuntu-latest
     strategy:
@@ -84,6 +85,7 @@ jobs:
             whoami
             ls -at1
           SCRIPT_AFTER: |
+            [[ -d ${{ env.deploy_path }} ]] || mkdir -pv ${{ env.deploy_path }}
             cd ${{ env.deploy_path }} && rm -rf *
             tar -zxvf ${{ env.app_name }}.tgz -C ${{ env.deploy_path }}
             [[ -f setup.sh ]] && bash setup.sh
