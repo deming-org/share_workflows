@@ -51,7 +51,7 @@ jobs:
     name: 主机部署
     needs:
       - deploy_before
-    runs-on: self-hosted:
+    runs-on: self-hosted
     strategy:
       matrix:
         host: ['172.31.94.49', '172.31.94.47']
