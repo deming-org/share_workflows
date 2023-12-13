@@ -20,8 +20,8 @@ jobs:
     environment: dev
     steps:
     - name: 预建工作目录
-      run: mkdir -pv $GITHUB_WORKFLOW
-      # run: mkdir -pv ${{ github.workflow }}
+      # run: mkdir -pv $GITHUB_WORKFLOW
+      run: mkdir -pv ${{ github.workflow }}
       working-directory: ./
       
     - name: 打印操作
