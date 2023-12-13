@@ -12,7 +12,7 @@ on:
 
 defaults:
   run:
-    working-directory: scripts
+    working-directory: $GITHUB_WORKFLOW
     
 jobs:
   build:
@@ -20,7 +20,7 @@ jobs:
     environment: dev
     steps:
     - name: 预建工作目录
-      run: mkdir scripts
+      run: mkdir -pv $GITHUB_WORKFLOW
       working-directory: ./
       
     - name: 打印操作
