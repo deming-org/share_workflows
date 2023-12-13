@@ -45,7 +45,7 @@ jobs:
           svn --version --quiet &&  echo -e "\033[33m我拉取了svn仓库\033[0m" || echo -e "\033[31msvn命令不存在\033[0m"
         
       - name: 拉取代码 - git仓库
-        if: ${{ inputs.repo_type == '' }}
+        if: ${{ inputs.repo_type == 'git' }}
         uses: actions/checkout@v4.1.1
         with: 
           repository: ${{ inputs.repository == '' && github.repository || inputs.repository }}
@@ -78,7 +78,7 @@ jobs:
         
       - name: 打包压缩
         run: |
-          rm -rf .git*
+          rm -rf .git* .svn*
           tar -zcvf ${{ inputs.artifact_name }}.tgz *
           ls -l ${{ inputs.artifact_name }}.tgz && tar -tzvf ${{ inputs.artifact_name }}.tgz
           
