@@ -4,15 +4,15 @@ name: python-demo-dev
 on:
   workflow_dispatch:
     inputs:
-      var1:
-        description: '测试变量'
-        default: '这是测试变量的值'
+      ref:
+        description: '分支或标签(正式使用的时候不要给默认值)'
+        default: 'main'
         required: true
         type: string
-      environment:
-        description: '环境'
-        required: false
-        type: environment
+      # environment:
+      #   description: '环境'
+      #   required: false
+      #   type: environment
 
 jobs:
   build:
@@ -24,7 +24,7 @@ jobs:
       artifact_name: python-demo-dev
       github-server-url: 'https://github.com'
       repository: 'deming-org/python-demo'
-      ref: 'main'
+      ref: ${{ inputs.ref }}
       repo_type: 'git'
   
   deploy:
