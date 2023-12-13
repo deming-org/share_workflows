@@ -55,7 +55,7 @@ jobs:
     # runs-on: self-hosted
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 1
+      max-parallel: 2
       matrix:
         host: ['47.242.225.68', '47.57.140.251']
     steps:
@@ -88,13 +88,13 @@ jobs:
             whoami
             pwd
           SCRIPT_AFTER: |
-            echo -e "\033[36m我是部署后操作\033[0m"
-            [[ -d ${{ env.deploy_path }} ]] || mkdir -pv ${{ env.deploy_path }}
-            cd ${{ env.deploy_path }} && rm -rf *
-            tar -zxvf ${{ env.app_name }}.tgz -C ${{ env.deploy_path }}
-            [[ -f setup.sh ]] && bash setup.sh
-            [[ -f restart.sh ]] && bash restart.sh
-            pwd && ls -al ${{ env.deploy_path }}
+            # echo -e "\033[36m我是部署后操作\033[0m"
+            # [[ -d ${{ env.deploy_path }} ]] || mkdir -pv ${{ env.deploy_path }}
+            # cd ${{ env.deploy_path }} && rm -rf *
+            # tar -zxvf ${{ env.app_name }}.tgz -C ${{ env.deploy_path }}
+            # [[ -f setup.sh ]] && bash setup.sh
+            # [[ -f restart.sh ]] && bash restart.sh
+            # pwd && ls -al ${{ env.deploy_path }}
             curl -s https://www.cip.cc/
 
   notification:
