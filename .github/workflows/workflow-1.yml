@@ -12,7 +12,7 @@ on:
 
 defaults:
   run:
-    working-directory: $GITHUB_WORKFLOW
+    working-directory: ${{ github.WORKFLOW }}
     
 jobs:
   build:
