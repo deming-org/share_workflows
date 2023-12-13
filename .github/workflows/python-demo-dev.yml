@@ -60,14 +60,16 @@ jobs:
         host: ['47.242.225.68', '47.57.140.251']
     steps:
       ######################### 使用github提供的运行器时使用 ######################### 
-      - name: 预建工作目录（）
+      - name: 预建工作目录
         run: mkdir -pv ${{ github.workflow }}
-      - name: 下载制品（使用github提供的运行器时使用）
+      - name: 下载制品
         uses: actions/download-artifact@v3.0.2
         with:
           # 制品名称和build环节保持一致
           name: ${{ inputs.host_group }}
           path: ${{ github.workflow }}
+      - name: 查看
+        run: pwd && ls -at1 ${{ github.workflow }}
       ######################### 使用github提供的运行器时使用 ######################### 
           
       - name: 执行部署脚本
@@ -82,9 +84,11 @@ jobs:
           # # Arguments to pass to rsync
           # ARGS: # optional, default is -rlgoDzvc -i
           SCRIPT_BEFORE: |
+            echo -e "\033[36m我是部署前操作\033[0m"
             whoami
-            ls -at1
+            pwd
           SCRIPT_AFTER: |
+            echo -e "\033[36m我是部署后操作\033[0m"
             [[ -d ${{ env.deploy_path }} ]] || mkdir -pv ${{ env.deploy_path }}
             cd ${{ env.deploy_path }} && rm -rf *
             tar -zxvf ${{ env.app_name }}.tgz -C ${{ env.deploy_path }}
