@@ -51,10 +51,11 @@ jobs:
     name: 主机部署
     needs:
       - deploy_before
-    runs-on: self-hosted
+    # runs-on: self-hosted
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        host: ['172.31.94.47', '172.31.94.49']
+        host: ['47.242.225.68', '47.57.140.251']
     steps:
       - name: 执行部署脚本
         uses: easingthemes/ssh-deploy@v5.0.0
@@ -82,7 +83,8 @@ jobs:
     name: 通知
     needs:
       - deploy
-    runs-on: self-hosted
+    # runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: 飞书通知
         working-directory: ${{ github.workflow }}
@@ -99,8 +101,8 @@ jobs:
           tar zxf linux-amd64-actions-feishu.tar.gz feishu
           ./feishu
           
-      - name: 清理运行器
-        working-directory: ${{ github.workflow }}
-        run: |
-          pwd && ls -at1
-          rm -rf ./*
+      # - name: 清理运行器
+      #   working-directory: ${{ github.workflow }}
+      #   run: |
+      #     pwd && ls -at1
+      #     rm -rf ./*
