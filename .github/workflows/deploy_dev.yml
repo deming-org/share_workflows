@@ -22,10 +22,6 @@ on:
         required: false
         type: string
 
-defaults:
-  run:
-    working-directory: $GITHUB_WORKFLOW
-
 jobs:
   deploy:
     name: 部署
@@ -33,7 +29,7 @@ jobs:
     # environment: dev
     steps:
       - name: 预建工作目录
-        run: mkdir -pv ./$GITHUB_WORKFLOW
+        run: mkdir -pv ${{ github.workflow }}
         working-directory: ./
       
       - name: 下载制品
@@ -41,13 +37,17 @@ jobs:
         with:
           # 制品名称和build环节保持一致
           name: ${{ inputs.host_group }}
+          path: ${{ github.workflow }}
+          
       - name: 执行部署脚本
         run: |
           pwd
           curl -s https://www.cip.cc/; echo -e "\n/usr/local/sbin/deploy -hosts=${{ inputs.host_group }} -path=${{ inputs.deploy_path }} -setup_cmd=${{ inputs.setup_cmd }} -restart_cmd=${{ inputs.restart_cmd }}"
           ls -a && echo -e "\033[36m部署结束\033[0m"
           exit 1
+          
       - name: 飞书通知
+        working-directory: ${{ github.workflow }}
         # if: ${{ always() }}
         if: ${{ !cancelled() }}
         env:
