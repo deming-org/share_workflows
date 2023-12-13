@@ -22,12 +22,20 @@ on:
         required: false
         type: string
 
+defaults:
+  run:
+    working-directory: $GITHUB_WORKFLOW
+
 jobs:
   deploy:
     name: 部署
     runs-on: self-hosted
     # environment: dev
     steps:
+      - name: 预建工作目录
+        run: mkdir -pv ./$GITHUB_WORKFLOW
+        working-directory: ./
+      
       - name: 下载制品
         uses: actions/download-artifact@v3.0.2
         with:
