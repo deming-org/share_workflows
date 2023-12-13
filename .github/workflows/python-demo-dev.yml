@@ -2,7 +2,17 @@
 name: python-demo-dev
 
 on:
-  workflow_call:
+  workflow_dispatch:
+    inputs:
+      var1:
+        description: '测试变量'
+        default: '这是测试变量的值'
+        required: true
+        type: string
+      environment:
+        description: '环境'
+        required: false
+        type: environment
 
 jobs:
   build:
