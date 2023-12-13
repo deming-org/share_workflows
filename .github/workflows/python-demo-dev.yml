@@ -19,16 +19,22 @@ jobs:
     name: 编译
     uses: ./.github/workflows/build_python_dev.yml
     secrets: inherit
+    with:
+      # 配置参数通过api动态获取
+      artifact_name: python-demo-dev
+      repository: /data/python-demo/
+      ref: 'main'
+      repo_type: 'git'
   
   deploy:
     name: 主机部署
     needs:
       - build
     uses: ./.github/workflows/deploy_dev.yml
+    secrets: inherit
     with:
-      # 配置参数通过流水线管理系统获取
+      # 配置参数通过api动态获取
       host_group: python-demo-dev
       deploy_path: /data/python-demo/
       setup_cmd: 'bash setup.sh'
       restart_cmd: 'bash restart.sh'
-    secrets: inherit
