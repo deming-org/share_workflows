@@ -39,30 +39,30 @@ jobs:
           name: ${{ inputs.host_group }}
           path: ${{ github.workflow }}
           
-      - name: 执行部署脚本
-        run: |
-          pwd
-          curl -s https://www.cip.cc/; echo -e "\n/usr/local/sbin/deploy -hosts=${{ inputs.host_group }} -path=${{ inputs.deploy_path }} -setup_cmd=${{ inputs.setup_cmd }} -restart_cmd=${{ inputs.restart_cmd }}"
-          ls -at1 ${{ github.workflow }} && echo -e "\033[36m部署结束\033[0m"
-          # exit 1
+      # - name: 执行部署脚本
+      #   run: |
+      #     pwd
+      #     curl -s https://www.cip.cc/; echo -e "\n/usr/local/sbin/deploy -hosts=${{ inputs.host_group }} -path=${{ inputs.deploy_path }} -setup_cmd=${{ inputs.setup_cmd }} -restart_cmd=${{ inputs.restart_cmd }}"
+      #     ls -at1 ${{ github.workflow }} && echo -e "\033[36m部署结束\033[0m"
+      #     # exit 1
           
-      - name: 飞书通知
-        working-directory: ${{ github.workflow }}
-        # if: ${{ always() }}
-        if: ${{ !cancelled() }}
-        env:
-          ACTIONS_FEISHU_TAG: 'v1.3.1'
-          INPUT_WEBHOOK: "${{ secrets.FS_ROBOT_TEST }}"
-          INPUT_MESSAGE_TYPE: "post"
-          INPUT_TITLE: "${{ github.WORKFLOW }}流水线通知"
-          INPUT_CONTENT: "仓库地址: ${{ github.SERVER_URL }}/${{ github.repository }}/tree/${{ github.REF_NAME }}\n发布环境：开发环境\n执行人：${{ github.ACTOR }}\n运行状态：${{ job.status }}"
-        run: |
-          wget -q https://github.com/xiachufang/actions-feishu/releases/download/${{ env.ACTIONS_FEISHU_TAG }}/linux-amd64-actions-feishu.tar.gz
-          tar zxf linux-amd64-actions-feishu.tar.gz feishu
-          ./feishu
+      # - name: 飞书通知
+      #   working-directory: ${{ github.workflow }}
+      #   # if: ${{ always() }}
+      #   if: ${{ !cancelled() }}
+      #   env:
+      #     ACTIONS_FEISHU_TAG: 'v1.3.1'
+      #     INPUT_WEBHOOK: "${{ secrets.FS_ROBOT_TEST }}"
+      #     INPUT_MESSAGE_TYPE: "post"
+      #     INPUT_TITLE: "${{ github.WORKFLOW }}流水线通知"
+      #     INPUT_CONTENT: "仓库地址: ${{ github.SERVER_URL }}/${{ github.repository }}/tree/${{ github.REF_NAME }}\n发布环境：开发环境\n执行人：${{ github.ACTOR }}\n运行状态：${{ job.status }}"
+      #   run: |
+      #     wget -q https://github.com/xiachufang/actions-feishu/releases/download/${{ env.ACTIONS_FEISHU_TAG }}/linux-amd64-actions-feishu.tar.gz
+      #     tar zxf linux-amd64-actions-feishu.tar.gz feishu
+      #     ./feishu
           
-      - name: 清理运行器
-        working-directory: ${{ github.workflow }}
-        run: |
-          pwd && ls -at1
-          rm -rf ./*
+      # - name: 清理运行器
+      #   working-directory: ${{ github.workflow }}
+      #   run: |
+      #     pwd && ls -at1
+      #     rm -rf ./*
