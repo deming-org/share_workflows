@@ -6,6 +6,10 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  # 重置当前workflow的工作目录
+  GITHUB_WORKSPACE: ${{ github.workspace}}/${{ github.workflow}}
+
 jobs:
   test1:
     name: 测试验证1
