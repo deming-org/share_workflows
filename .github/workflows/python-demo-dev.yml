@@ -22,7 +22,8 @@ jobs:
     with:
       # 配置参数通过api动态获取
       artifact_name: python-demo-dev
-      repository: 'https://github.com/deming-org/python-demo'
+      # repository: 'https://github.com/deming-org/python-demo'
+      repository: 'deming-org/python-demo'
       ref: 'main'
       repo_type: 'git'
   
