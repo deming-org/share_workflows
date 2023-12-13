@@ -7,8 +7,13 @@ on:
         description: '制品名称'
         required: true
         type: string
+      github-server-url:
+        description: '仓库域名'
+        default: 'https://github.com'
+        required: false
+        type: string
       repository:
-        description: '仓库地址'
+        description: '仓库名'
         required: true
         type: string
       ref:
@@ -48,9 +53,10 @@ jobs:
         if: ${{ inputs.repo_type == 'git' }}
         uses: actions/checkout@v4.1.1
         with: 
+          github-server-url: ${{ inputs.github-server-url }}
           repository: ${{ inputs.repository == '' && github.repository || inputs.repository }}
           ref: ${{ inputs.ref == '' && github.REF_NAME || inputs.ref }}
-          token: ${{ secrets.repo_token == '' && github.token || secrets.repo_token }}
+          token: ${{ secrets.GH_TOKEN != '' && secrets.GH_TOKEN || github.token }}
           
       - name: 配置编译环境
         uses: actions/setup-python@v4
