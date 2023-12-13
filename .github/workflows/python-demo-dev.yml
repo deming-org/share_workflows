@@ -28,7 +28,7 @@ jobs:
     secrets: inherit
     with:
       # 配置参数通过api动态获取
-      artifact_name: ${{ env.app_name }}
+      artifact_name: python-demo-dev
       github-server-url: 'https://github.com'
       repository: 'deming-org/python-demo'
       ref: ${{ inputs.ref }}
@@ -42,7 +42,7 @@ jobs:
     secrets: inherit
     with:
       # 配置参数通过api动态获取
-      host_group:  ${{ env.app_name }}
+      host_group:  python-demo-dev
       deploy_path: /data/python-demo/
       setup_cmd: 'bash setup.sh'
       restart_cmd: 'bash restart.sh'
@@ -63,7 +63,7 @@ jobs:
           # REMOTE_PORT: 22
           REMOTE_USER: ${{ secrets.SSH_USER }}
           SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
-          SOURCE: ${{ github.WORKFLOW }}/${{ env.app_name }}.tgz
+          SOURCE: ${{ github.WORKFLOW }}/python-demo-dev.tgz
           TARGET: /tmp/app/
           # # Arguments to pass to rsync
           # ARGS: # optional, default is -rlgoDzvc -i
