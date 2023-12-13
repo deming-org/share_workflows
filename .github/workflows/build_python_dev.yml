@@ -9,11 +9,11 @@ on:
         type: string
       repository:
         description: '仓库地址'
-        required: false
+        required: true
         type: string
       ref:
         description: '分支或标签'
-        required: false
+        required: true
         type: string
       # 区分svn还是git
       repo_type:
@@ -21,10 +21,10 @@ on:
         default: 'git'
         required: false
         type: string
-    secrets:
-      repo_token:
-        description: '仓库认证令牌'
-        required: false
+    # secrets:
+    #   repo_token:
+    #     description: '仓库认证令牌'
+    #     required: false
 
 # 组成工作流的jobs， 包含一个以上的job
 jobs:
@@ -35,11 +35,14 @@ jobs:
     # environment: dev
     steps:
       - name: 打印变量
-        run: echo -e "repo_type=${{ inputs.repo_type }}\trepository=${{ inputs.repository }}\tref=${{ inputs.ref }}\nrepo_token=${{ secrets.repo_token }}"
+        run: |
+          echo -e "repo_type=${{ inputs.repo_type }}\trepository=${{ inputs.repository }}\tref=${{ inputs.ref }}"
+          echo -e "\033[33m_GITHUB_TOKEN=${{ secrets._GITHUB_TOKEN }}\033[0m"
         
       - name: 拉取代码 - svn仓库
         if: ${{ inputs.repo_type == 'svn' }}
-        run: echo "我拉取了svn仓库"
+        run: |
+          svn --version --quiet &&  echo -e "\033[33m我拉取了svn仓库\033[0m" || echo -e "\033[31msvn命令不存在\033[0m"
         
       - name: 拉取代码 - git仓库
         if: ${{ inputs.repo_type == '' }}
