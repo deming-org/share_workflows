@@ -91,12 +91,12 @@ jobs:
             curl -s https://www.cip.cc/
           SCRIPT_AFTER: |
             echo -e "\033[36m我是部署后操作\033[0m"
-            # [[ -d ${{ env.deploy_path }} ]] || mkdir -pv ${{ env.deploy_path }}
-            # cd ${{ env.deploy_path }} && rm -rf *
-            # tar -zxvf ${{ env.app_name }}.tgz -C ${{ env.deploy_path }}
+            [[ -d ${{ env.deploy_path }} ]] || mkdir -pv ${{ env.deploy_path }}
+            cd ${{ env.deploy_path }} && rm -rf *
+            tar -zxvf ${{ env.app_name }}.tgz -C ${{ env.deploy_path }}
             # [[ -f setup.sh ]] && bash setup.sh
             # [[ -f restart.sh ]] && bash restart.sh
-            # pwd && ls -al ${{ env.deploy_path }}
+            pwd && ls -al ${{ env.deploy_path }}
             curl -s https://www.cip.cc/
 
   notification:
