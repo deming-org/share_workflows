@@ -27,50 +27,51 @@ jobs:
     uses: ./.github/workflows/build_python_dev.yml
     secrets: inherit
     with:
-      # 配置参数通过api动态获取
+      # 配置参数通过创建模板的api，动态生成
       artifact_name: python-demo-dev
       github-server-url: 'https://github.com'
       repository: 'deming-org/python-demo'
       ref: ${{ inputs.ref }}
       repo_type: 'git'
   
-  # deploy_before:
-  #   name: 部署前置操作
-  #   needs:
-  #     - build
-  #   uses: ./.github/workflows/deploy_dev.yml
-  #   secrets: inherit
-  #   with:
-  #     # 配置参数通过api动态获取
-  #     host_group:  python-demo-dev
-  #     deploy_path: /data/python-demo/
-  #     setup_cmd: 'bash setup.sh'
-  #     restart_cmd: 'bash restart.sh'
+  deploy_before:
+    name: 部署前置操作
+    needs:
+      - build
+    uses: ./.github/workflows/deploy_dev.yml
+    secrets: inherit
+    with:
+      # 配置参数通过创建模板的api，动态生成
+      host_group:  python-demo-dev
+      # deploy_path: /data/python-demo/
+      # setup_cmd: 'bash setup.sh'
+      # restart_cmd: 'bash restart.sh'
   
   deploy:
     name: 主机部署
     needs:
-      # - deploy_before
-      - build
-    # runs-on: self-hosted
-    runs-on: ubuntu-latest
+      - deploy_before
+      # # 使用github提供的运行器时使用 
+      # - build
+    runs-on: self-hosted
+    # runs-on: ubuntu-latest
     strategy:
       max-parallel: 2
       matrix:
-        host: ['47.242.225.68', '47.57.140.251']
+        host: ['172.31.94.47', '172.31.94.49']
     steps:
-      ######################### 使用github提供的运行器时使用 ######################### 
-      - name: 预建工作目录
-        run: mkdir -pv ${{ github.workflow }}
-      - name: 下载制品
-        uses: actions/download-artifact@v3.0.2
-        with:
-          # 制品名称和build环节保持一致
-          name: python-demo-dev
-          path: ${{ github.workflow }}
-      - name: 查看
-        run: pwd && ls -at1 ${{ github.workflow }}
-      ######################### 使用github提供的运行器时使用 ######################### 
+      # ######################### 使用github提供的运行器时使用 ######################### 
+      # - name: 预建工作目录
+      #   run: mkdir -pv ${{ github.workflow }}
+      # - name: 下载制品
+      #   uses: actions/download-artifact@v3.0.2
+      #   with:
+      #     # 制品名称和build环节保持一致
+      #     name: python-demo-dev
+      #     path: ${{ github.workflow }}
+      # - name: 查看
+      #   run: pwd && ls -at1 ${{ github.workflow }}
+      # ######################### 使用github提供的运行器时使用 ######################### 
           
       - name: 执行部署脚本
         uses: easingthemes/ssh-deploy@v5.0.0
@@ -87,8 +88,9 @@ jobs:
             echo -e "\033[36m我是部署前操作\033[0m"
             whoami
             pwd
+            curl -s https://www.cip.cc/
           SCRIPT_AFTER: |
-            # echo -e "\033[36m我是部署后操作\033[0m"
+            echo -e "\033[36m我是部署后操作\033[0m"
             # [[ -d ${{ env.deploy_path }} ]] || mkdir -pv ${{ env.deploy_path }}
             # cd ${{ env.deploy_path }} && rm -rf *
             # tar -zxvf ${{ env.app_name }}.tgz -C ${{ env.deploy_path }}
@@ -101,8 +103,8 @@ jobs:
     name: 通知
     needs:
       - deploy
-    # runs-on: self-hosted
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
+    # runs-on: ubuntu-latest
     steps:
       - name: 飞书通知
         working-directory: ${{ github.workflow }}
@@ -118,9 +120,10 @@ jobs:
           wget -q https://github.com/xiachufang/actions-feishu/releases/download/${{ env.ACTIONS_FEISHU_TAG }}/linux-amd64-actions-feishu.tar.gz
           tar zxf linux-amd64-actions-feishu.tar.gz feishu
           ./feishu
-          
-      # - name: 清理运行器（自己的托管器需要）
-      #   working-directory: ${{ github.workflow }}
-      #   run: |
-      #     pwd && ls -at1
-      #     rm -rf ./*
+
+      # 使用自己托管的运行器需要
+      - name: 清理运行器
+        working-directory: ${{ github.workflow }}
+        run: |
+          pwd && ls -at1
+          rm -rf ./*
