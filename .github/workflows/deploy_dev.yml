@@ -8,19 +8,19 @@ on:
         description: '主机组'
         required: true
         type: string
-      deploy_path:
-        description: '部署位置'
-        default: '/data/www/'
-        required: false
-        type: string
-      setup_cmd:
-        description: '环境和依赖安装命令'
-        required: false
-        type: string
-      restart_cmd:
-        description: '重启命令'
-        required: false
-        type: string
+      # deploy_path:
+      #   description: '部署位置'
+      #   default: '/data/www/'
+      #   required: false
+      #   type: string
+      # setup_cmd:
+      #   description: '环境和依赖安装命令'
+      #   required: false
+      #   type: string
+      # restart_cmd:
+      #   description: '重启命令'
+      #   required: false
+      #   type: string
 
 jobs:
   deploy:
