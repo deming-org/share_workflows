@@ -85,12 +85,12 @@ jobs:
           # # Arguments to pass to rsync
           # ARGS: # optional, default is -rlgoDzvc -i
           SCRIPT_BEFORE: |
-            # echo -e "\033[36m我是部署前操作\033[0m"
+            echo -e "\033[36m我是部署前操作\033[0m"
             whoami
             pwd
             curl -s https://www.cip.cc/
           SCRIPT_AFTER: |
-            # echo -e "\033[36m我是部署后操作\033[0m"
+            echo -e "\033[36m我是部署后操作\033[0m"
             # [[ -d ${{ env.deploy_path }} ]] || mkdir -pv ${{ env.deploy_path }}
             # cd ${{ env.deploy_path }} && rm -rf *
             # tar -zxvf ${{ env.app_name }}.tgz -C ${{ env.deploy_path }}
