@@ -26,20 +26,22 @@ jobs:
         
       - name: 飞书通知
         if: ${{ !cancelled() && inputs.feishu }}
-        uses: xiachufang/actions-feishu@v1.3.1
-        with:
-          webhook: ${{ secrets.FS_ROBOT }}
-          title: "Workflow 消息通知"
-          content: "${{ inputs.msg }}"
-          message_type: "post" # optional, default is post
-        # env:
-        #   ACTIONS_FEISHU_TAG: 'v1.3.1'
-        #   INPUT_WEBHOOK: ${{ secrets.FS_ROBOT }}
-        #   INPUT_MESSAGE_TYPE: "post"
-        #   INPUT_TITLE: "Workflow 消息通知"
-        #   INPUT_CONTENT: ${{ inputs.msg }}
-        # run: |
-        #   wget -q https://github.com/xiachufang/actions-feishu/releases/download/${{ env.ACTIONS_FEISHU_TAG }}/linux-amd64-actions-feishu.tar.gz
-        #   tar zxf linux-amd64-actions-feishu.tar.gz feishu
-        #   ./feishu
-        #   echo "FS_ROBOT: ${{ secrets.FS_ROBOT }}"
+        env:
+          ACTIONS_FEISHU_TAG: 'v1.3.1'
+          INPUT_WEBHOOK: ${{ secrets.FS_ROBOT }}
+          INPUT_MESSAGE_TYPE: "post"
+          INPUT_TITLE: "Workflow 消息通知"
+          INPUT_CONTENT: ${{ inputs.msg }}
+        run: |
+          wget -q https://github.com/xiachufang/actions-feishu/releases/download/${{ env.ACTIONS_FEISHU_TAG }}/linux-amd64-actions-feishu.tar.gz
+          tar zxf linux-amd64-actions-feishu.tar.gz feishu
+          ./feishu
+          echo "FS_ROBOT: ${{ secrets.FS_ROBOT }}"
+          
+        # # 速度慢一倍
+        # uses: xiachufang/actions-feishu@v1.3.1
+        # with:
+        #   webhook: ${{ secrets.FS_ROBOT }}
+        #   title: "Workflow 消息通知"
+        #   content: "${{ inputs.msg }}"
+        #   message_type: "post" # optional, default is post
