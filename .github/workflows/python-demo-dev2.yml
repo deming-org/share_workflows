@@ -1,5 +1,4 @@
-# 部署python-demo仓库代码到开发环境
-name: python-demo-dev
+name: 测试repository_dispatch
 
 # 仓库地址和分支信息需要调用方传递过来
 on:
