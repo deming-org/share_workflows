@@ -23,7 +23,6 @@ jobs:
     name: 测试验证2
     # needs:
     #   - test1
-    uses: ./.github/workflows/workflow-1.yml
-    secrets: inherit
+    uses: ./.github/workflows/notification.yml
     with:
-      config-path: ./ci_cd.yml
+      msg: "测试消息"
