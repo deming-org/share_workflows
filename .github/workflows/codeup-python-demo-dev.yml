@@ -28,7 +28,7 @@ jobs:
           mkdir codeup-python-demo && cd codeup-python-demo 
           git init
           git remote add origin https://${{ secrets.CODEUP_USER }}:${{ secrets.CODEUP_PWD }}@codeup.aliyun.com/62d8ed7cde1705ebb4f32b0c/lm/codeup-python-demo.git
-          git fetch --depth=1 origin master 
+          git fetch --depth=1 origin master # 指定分支/标签/SHA
           git checkout FETCH_HEAD
           echo -e "\033[33m以下是验证命令\n\033[0m"
           git log && ls -atl
