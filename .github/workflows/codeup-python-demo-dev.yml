@@ -1,0 +1,121 @@
+# 部署python-demo仓库代码到开发环境
+name: codeup-python-demo-dev
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: '分支或标签(正式使用的时候不要给默认值)'
+        default: 'main'
+        required: true
+        type: string
+
+env:
+  app_name: codeup-python-demo-dev  # 设计为应用名，<仓库名>-<环境代号>
+  deploy_path: /data/codeup-python-demo/  # 部署路径：/data/<仓库名>
+  deploy_user: aoemo  # 部署目录用户
+
+jobs:
+  build:
+    name: 编译
+    runs-on: ubuntu-latest
+    steps:
+      - name: 打印变量
+        run: |
+          echo -e "\033[33mCODEUP_USER: ${{ secrets.CODEUP_USER }}\t CODEUP_PWD: ${{ secrets.CODEUP_PWD }}\033[0m"
+      - name: 拉代码
+        run: |
+          mkdir codeup-python-demo && cd codeup-python-demo 
+          git init
+          git remote add origin https://${{ secrets.CODEUP_USER }}:${{ secrets.CODEUP_PWD }}@codeup.aliyun.com/62d8ed7cde1705ebb4f32b0c/lm/codeup-python-demo.git
+          git fetch --depth=1 origin master 
+          git checkout FETCH_HEAD
+          echo -e "\033[33m以下是验证命令\n\033[0m"
+          git log && ls -atl
+      
+    # uses: ./.github/workflows/build_python_dev.yml
+    # secrets: inherit
+    # with:
+    #   # 配置参数通过创建模板的api，动态生成
+    #   artifact_name: codeup-python-demo-dev
+    #   github-server-url: 'https://github.com'
+    #   
+    #   repository: 'deming-org/python-demo'
+    #   ref: ${{ inputs.ref }}
+    #   repo_type: 'git'
+  
+  # deploy_before:
+  #   name: 部署前置操作
+  #   needs:
+  #     - build
+  #   uses: ./.github/workflows/deploy_dev.yml
+  #   secrets: inherit
+  #   with:
+  #     # 配置参数通过创建模板的api，动态生成
+  #     host_group:  codeup-python-demo-dev
+  #     # deploy_path: /data/codeup-python-demo/
+  #     # setup_cmd: 'bash setup.sh'
+  #     # restart_cmd: 'bash restart.sh'
+  
+  # deploy:
+  #   # environment: prod  # 如果作业想设置人工审核，需要关联环境，并给环境配置保护规则
+  #   name: 主机部署
+  #   needs:
+  #     - deploy_before
+  #     # # 使用github提供的运行器时使用 
+  #     # - build
+  #   runs-on: self-hosted
+  #   # runs-on: ubuntu-latest
+  #   strategy:
+  #     # max-parallel: 2  # 并发控制
+  #     matrix:
+  #       host: ['172.31.94.47', '172.31.94.49']
+  #   steps:
+  #     - name: 执行部署脚本
+  #       uses: easingthemes/ssh-deploy@v5.0.0
+  #       with:
+  #         REMOTE_HOST: ${{ matrix.host }}
+  #         # REMOTE_PORT: 22
+  #         REMOTE_USER: ${{ secrets.SSH_USER }}
+  #         SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+  #         SOURCE: ${{ github.WORKFLOW }}/codeup-python-demo-dev.tgz
+  #         TARGET: /tmp/app/
+  #         # # Arguments to pass to rsync
+  #         # ARGS: # optional, default is -rlgoDzvc -i
+  #         SCRIPT_BEFORE: |
+  #           echo -e "\033[36m我是部署前操作\033[0m"
+  #           echo -e "\033[33m当前主机ip：$(curl -m 3 -s ifconfig.me)\033[0m"
+  #           [[ -d ${{ env.deploy_path }} ]] || mkdir -pv ${{ env.deploy_path }}
+  #           cd ${{ env.deploy_path }} && rm -rf *
+  #         SCRIPT_AFTER: |
+  #           echo -e "\033[36m我是部署后操作\033[0m"
+  #           echo -e "\033[33m当前主机ip：$(curl -m 3 -s ifconfig.me)\033[0m"
+  #           tar -zxvf /tmp/app/${{ env.app_name }}.tgz -C ${{ env.deploy_path }}
+  #           chown -R ${{ env.deploy_user }}.${{ env.deploy_user }}  ${{ env.deploy_path }}
+  #           pwd && ls -al ${{ env.deploy_path }}
+  #           su -l aoemo -c "python3 ${{ env.deploy_path }}app.py"
+  #           [[ -f setup.sh ]] && bash setup.sh
+  #           [[ -f restart.sh ]] && bash restart.sh
+  
+  # clean:
+  #   name: 清理
+  #   needs:
+  #     - deploy
+  #   runs-on: self-hosted
+  #   steps:
+  #     # 需要解决精确清理当前workflow，本次运行产生的内容
+  #     - name: 清理运行器
+  #       working-directory: ${{ github.workflow }}
+  #       run: |
+  #         pwd && ls -at1
+  #         rm -rf ./*
+
+  # notification:
+  #   name: 通知
+  #   needs:
+  #     - clean
+  #   secrets: inherit
+  #   uses: ./.github/workflows/notification.yml
+  #   with:
+  #     # 需要解决获取之前作业状态的问题
+  #     msg: "流水线：${{ github.WORKFLOW }}\n仓库地址: ${{ github.SERVER_URL }}/${{ github.repository }}/tree/${{ github.REF_NAME }}\n发布环境：开发环境\n执行人：${{ github.ACTOR }}\n运行状态：成功"
