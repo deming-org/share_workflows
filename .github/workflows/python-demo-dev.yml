@@ -101,5 +101,5 @@ jobs:
     uses: ./.github/workflows/notification.yml
     with:
       # 需要解决获取之前作业状态的问题
-      msg: "仓库地址: ${{ github.SERVER_URL }}/${{ github.repository }}/tree/${{ github.REF_NAME }}\n发布环境：开发环境\n执行人：${{ github.ACTOR }}\n运行状态：${{ job.status }}"
+      msg: "仓库地址: ${{ github.SERVER_URL }}/${{ github.repository }}/tree/${{ github.REF_NAME }}\n发布环境：开发环境\n执行人：${{ github.ACTOR }}\n运行状态：成功"
 
