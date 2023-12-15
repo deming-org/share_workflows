@@ -8,7 +8,7 @@ on:
         required: true
         type: string
       github-server-url:
-        description: '仓库域名'
+        description: '仓库域名，仅针对github仓库'
         default: 'https://github.com'
         required: false
         type: string
