@@ -93,3 +93,17 @@ jobs:
         with:
           name: ${{ inputs.artifact_name }}
           path: ${{ inputs.artifact_name }}.tgz
+          
+      - name: 失败通知
+        # if: ${{ failure() }}
+        env:
+          ACTIONS_FEISHU_TAG: 'v1.3.1'
+          INPUT_WEBHOOK: "${{ secrets.FS_ROBOT }}"
+          INPUT_MESSAGE_TYPE: "post"
+          INPUT_TITLE: "【${{ github.WORKFLOW }}】 workflow编译失败通知"
+          INPUT_CONTENT: "仓库地址: ${{ github.SERVER_URL }}/${{ github.repository }}/tree/${{ github.REF_NAME }}\n发布环境：开发环境\n执行人：${{ github.ACTOR }}\n运行状态：${{ job.status }}"
+          # INPUT_CONTENT: "仓库地址: ${{ inputs.github-server-url }}/${{ inputs.repository }}/tree/${{ inputs.ref }}\n发布环境：开发环境\n执行人：${{ github.ACTOR }}\n运行状态：${{ job.status }}"
+        run: |
+          wget -q https://github.com/xiachufang/actions-feishu/releases/download/${{ env.ACTIONS_FEISHU_TAG }}/linux-amd64-actions-feishu.tar.gz
+          tar zxf linux-amd64-actions-feishu.tar.gz feishu
+          ./feishu
