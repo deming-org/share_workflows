@@ -23,6 +23,7 @@ jobs:
     name: 测试验证2
     # needs:
     #   - test1
+    secrets: inherit
     uses: ./.github/workflows/notification.yml
     with:
       msg: "测试消息"
