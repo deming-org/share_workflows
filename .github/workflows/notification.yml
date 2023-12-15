@@ -20,6 +20,10 @@ jobs:
     name: 通知
     runs-on: ubuntu-latest
     steps:
+      - name: 打印变量
+        run: |
+          echo -e "\033[33m msg=${{ inputs.msg }}\033[0m"
+        
       - name: 飞书通知
         if: ${{ !cancelled() && inputs.feishu }}
         uses: xiachufang/actions-feishu@v1.3.1
