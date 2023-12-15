@@ -1,5 +1,5 @@
 # 部署python-demo仓库代码到开发环境
-name: python-demo-dev
+name: notification
 
 on:
   workflow_call:
