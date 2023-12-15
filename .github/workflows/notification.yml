@@ -12,7 +12,7 @@ on:
       feishu:
         description: '飞书通知开关'
         default: true
-        required: true
+        required: false
         type: boolean
       
 jobs:
