@@ -98,6 +98,7 @@ jobs:
     name: 通知
     needs:
       - clean
+    secrets: inherit
     uses: ./.github/workflows/notification.yml
     with:
       # 需要解决获取之前作业状态的问题
