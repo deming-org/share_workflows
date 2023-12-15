@@ -52,7 +52,7 @@ jobs:
           # REMOTE_PORT: 22
           REMOTE_USER: ${{ secrets.SSH_USER }}
           SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
-          SOURCE: ${{ github.WORKFLOW }}/python-demo-dev.tgz
+          SOURCE: ${{ github.WORKFLOW }}/python-demo-dev2.tgz
           TARGET: /tmp/app/
           # # Arguments to pass to rsync
           # ARGS: # optional, default is -rlgoDzvc -i
