@@ -51,7 +51,7 @@ jobs:
     runs-on: self-hosted
     # runs-on: ubuntu-latest
     strategy:
-      max-parallel: 2
+      # max-parallel: 2  # 并发控制
       matrix:
         host: ['172.31.94.47', '172.31.94.49']
     steps:
