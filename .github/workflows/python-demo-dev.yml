@@ -9,17 +9,11 @@ on:
         default: 'main'
         required: true
         type: string
-      # environment:
-      #   description: '环境'
-      #   required: false
-      #   type: environment
 
 env:
-  app_name: python-demo-dev
-  deploy_path: /data/python-demo/
-  deploy_user: aoemo
-  # setup_cmd: 'bash setup.sh'
-  # restart_cmd: 'bash restart.sh'
+  app_name: python-demo-dev  # 设计为应用名，<仓库名>-<环境代号>
+  deploy_path: /data/python-demo/  # 部署路径：/data/<仓库名>
+  deploy_user: aoemo  # 部署目录用户
 
 jobs:
   build:
@@ -48,6 +42,7 @@ jobs:
       # restart_cmd: 'bash restart.sh'
   
   deploy:
+    # environment: prod  # 如果作业想设置人工审核，需要关联环境，并给环境配置保护规则
     name: 主机部署
     needs:
       - deploy_before
@@ -60,19 +55,6 @@ jobs:
       matrix:
         host: ['172.31.94.47', '172.31.94.49']
     steps:
-      # ######################### 使用github提供的运行器时使用 ######################### 
-      # - name: 预建工作目录
-      #   run: mkdir -pv ${{ github.workflow }}
-      # - name: 下载制品
-      #   uses: actions/download-artifact@v3.0.2
-      #   with:
-      #     # 制品名称和build环节保持一致
-      #     name: python-demo-dev
-      #     path: ${{ github.workflow }}
-      # - name: 查看
-      #   run: pwd && ls -at1 ${{ github.workflow }}
-      # ######################### 使用github提供的运行器时使用 ######################### 
-          
       - name: 执行部署脚本
         uses: easingthemes/ssh-deploy@v5.0.0
         with:
@@ -86,44 +68,38 @@ jobs:
           # ARGS: # optional, default is -rlgoDzvc -i
           SCRIPT_BEFORE: |
             echo -e "\033[36m我是部署前操作\033[0m"
-            whoami
-            pwd
             curl -s https://www.cip.cc/
-          SCRIPT_AFTER: |
-            echo -e "\033[36m我是部署后操作\033[0m"
             [[ -d ${{ env.deploy_path }} ]] || mkdir -pv ${{ env.deploy_path }}
             cd ${{ env.deploy_path }} && rm -rf *
+          SCRIPT_AFTER: |
+            echo -e "\033[36m我是部署后操作\033[0m"
+            curl -s https://www.cip.cc/
             tar -zxvf /tmp/app/${{ env.app_name }}.tgz -C ${{ env.deploy_path }}
+            chown -R ${{ env.deploy_user }}.${{ env.deploy_user }}  ${{ env.deploy_path }}
+            pwd && ls -al ${{ env.deploy_path }}
+            su -l aoemo -c "python3 ${{ env.deploy_path }}app.py"
             [[ -f setup.sh ]] && bash setup.sh
             [[ -f restart.sh ]] && bash restart.sh
-            pwd && ls -al ${{ env.deploy_path }}
-            curl -s https://www.cip.cc/
-
-  notification:
-    name: 通知
+  
+  clean:
+    name: 清理
     needs:
       - deploy
     runs-on: self-hosted
-    # runs-on: ubuntu-latest
     steps:
-      - name: 飞书通知
-        working-directory: ${{ github.workflow }}
-        # if: ${{ always() }}
-        if: ${{ !cancelled() }}
-        env:
-          ACTIONS_FEISHU_TAG: 'v1.3.1'
-          INPUT_WEBHOOK: "${{ secrets.FS_ROBOT_TEST }}"
-          INPUT_MESSAGE_TYPE: "post"
-          INPUT_TITLE: "${{ github.WORKFLOW }}流水线通知"
-          INPUT_CONTENT: "仓库地址: ${{ github.SERVER_URL }}/${{ github.repository }}/tree/${{ github.REF_NAME }}\n发布环境：开发环境\n执行人：${{ github.ACTOR }}\n运行状态：${{ job.status }}"
-        run: |
-          wget -q https://github.com/xiachufang/actions-feishu/releases/download/${{ env.ACTIONS_FEISHU_TAG }}/linux-amd64-actions-feishu.tar.gz
-          tar zxf linux-amd64-actions-feishu.tar.gz feishu
-          ./feishu
-
-      # 使用自己托管的运行器需要
+      # 需要解决精确清理当前workflow，本次运行产生的内容
       - name: 清理运行器
         working-directory: ${{ github.workflow }}
         run: |
           pwd && ls -at1
           rm -rf ./*
+
+  notification:
+    name: 通知
+    needs:
+      - clean
+    uses: ./.github/workflows/notification.yml
+    with:
+      # 需要解决获取之前作业状态的问题
+      msg: "仓库地址: ${{ github.SERVER_URL }}/${{ github.repository }}/tree/${{ github.REF_NAME }}\n发布环境：开发环境\n执行人：${{ github.ACTOR }}\n运行状态：${{ job.status }}"
+
