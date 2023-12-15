@@ -1,0 +1,129 @@
+# 部署python-demo仓库代码到开发环境
+name: python-demo-dev
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: '分支或标签(正式使用的时候不要给默认值)'
+        default: 'main'
+        required: true
+        type: string
+      # environment:
+      #   description: '环境'
+      #   required: false
+      #   type: environment
+
+env:
+  app_name: python-demo-dev
+  deploy_path: /data/python-demo/
+  deploy_user: aoemo
+  # setup_cmd: 'bash setup.sh'
+  # restart_cmd: 'bash restart.sh'
+
+jobs:
+  build:
+    name: 编译
+    uses: ./.github/workflows/build_python_dev.yml
+    secrets: inherit
+    with:
+      # 配置参数通过创建模板的api，动态生成
+      artifact_name: python-demo-dev
+      github-server-url: 'https://github.com'
+      repository: 'deming-org/python-demo'
+      ref: ${{ inputs.ref }}
+      repo_type: 'git'
+  
+  deploy_before:
+    name: 部署前置操作
+    needs:
+      - build
+    uses: ./.github/workflows/deploy_dev.yml
+    secrets: inherit
+    with:
+      # 配置参数通过创建模板的api，动态生成
+      host_group:  python-demo-dev
+      # deploy_path: /data/python-demo/
+      # setup_cmd: 'bash setup.sh'
+      # restart_cmd: 'bash restart.sh'
+  
+  deploy:
+    name: 主机部署
+    needs:
+      - deploy_before
+      # # 使用github提供的运行器时使用 
+      # - build
+    runs-on: self-hosted
+    # runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 2
+      matrix:
+        host: ['172.31.94.47', '172.31.94.49']
+    steps:
+      # ######################### 使用github提供的运行器时使用 ######################### 
+      # - name: 预建工作目录
+      #   run: mkdir -pv ${{ github.workflow }}
+      # - name: 下载制品
+      #   uses: actions/download-artifact@v3.0.2
+      #   with:
+      #     # 制品名称和build环节保持一致
+      #     name: python-demo-dev
+      #     path: ${{ github.workflow }}
+      # - name: 查看
+      #   run: pwd && ls -at1 ${{ github.workflow }}
+      # ######################### 使用github提供的运行器时使用 ######################### 
+          
+      - name: 执行部署脚本
+        uses: easingthemes/ssh-deploy@v5.0.0
+        with:
+          REMOTE_HOST: ${{ matrix.host }}
+          # REMOTE_PORT: 22
+          REMOTE_USER: ${{ secrets.SSH_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+          SOURCE: ${{ github.WORKFLOW }}/python-demo-dev.tgz
+          TARGET: /tmp/app/
+          # # Arguments to pass to rsync
+          # ARGS: # optional, default is -rlgoDzvc -i
+          SCRIPT_BEFORE: |
+            echo -e "\033[36m我是部署前操作\033[0m"
+            whoami
+            pwd
+            curl -s https://www.cip.cc/
+          SCRIPT_AFTER: |
+            echo -e "\033[36m我是部署后操作\033[0m"
+            [[ -d ${{ env.deploy_path }} ]] || mkdir -pv ${{ env.deploy_path }}
+            cd ${{ env.deploy_path }} && rm -rf *
+            tar -zxvf /tmp/app/${{ env.app_name }}.tgz -C ${{ env.deploy_path }}
+            [[ -f setup.sh ]] && bash setup.sh
+            [[ -f restart.sh ]] && bash restart.sh
+            pwd && ls -al ${{ env.deploy_path }}
+            curl -s https://www.cip.cc/
+
+  notification:
+    name: 通知
+    needs:
+      - deploy
+    runs-on: self-hosted
+    # runs-on: ubuntu-latest
+    steps:
+      - name: 飞书通知
+        working-directory: ${{ github.workflow }}
+        # if: ${{ always() }}
+        if: ${{ !cancelled() }}
+        env:
+          ACTIONS_FEISHU_TAG: 'v1.3.1'
+          INPUT_WEBHOOK: "${{ secrets.FS_ROBOT_TEST }}"
+          INPUT_MESSAGE_TYPE: "post"
+          INPUT_TITLE: "${{ github.WORKFLOW }}流水线通知"
+          INPUT_CONTENT: "仓库地址: ${{ github.SERVER_URL }}/${{ github.repository }}/tree/${{ github.REF_NAME }}\n发布环境：开发环境\n执行人：${{ github.ACTOR }}\n运行状态：${{ job.status }}"
+        run: |
+          wget -q https://github.com/xiachufang/actions-feishu/releases/download/${{ env.ACTIONS_FEISHU_TAG }}/linux-amd64-actions-feishu.tar.gz
+          tar zxf linux-amd64-actions-feishu.tar.gz feishu
+          ./feishu
+
+      # 使用自己托管的运行器需要
+      - name: 清理运行器
+        working-directory: ${{ github.workflow }}
+        run: |
+          pwd && ls -at1
+          rm -rf ./*
