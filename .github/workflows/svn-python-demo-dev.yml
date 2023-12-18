@@ -24,7 +24,7 @@ jobs:
       # 配置参数通过创建模板的api，动态生成
       app_name: svn-python-demo
       env: dev
-      repository: '${{ vars.SVN_SERVER }}/svn-python-demo'
+      repository: '${{ vars.SVN_SERVER }}'
       ref: ${{ inputs.ref }}
       repo_type: 'svn'
 
