@@ -26,7 +26,7 @@ jobs:
       env: dev
       repository: 'codeup.aliyun.com/62d8ed7cde1705ebb4f32b0c/lm/codeup-python-demo.git'
       ref: ${{ inputs.ref }}
-      repo_type: 'git'
+      repo_type: 'codeup'
       
     # runs-on: ubuntu-latest
     # steps:
