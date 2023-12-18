@@ -67,7 +67,7 @@ jobs:
           git checkout FETCH_HEAD
         
       - name: 拉取代码 - github仓库
-        if: ${{ inputs.repo_type == 'git' }}
+        if: ${{ inputs.repo_type == 'github' }}
         uses: actions/checkout@v4.1.1
         with: 
           github-server-url: ${{ inputs.github-server-url }}
