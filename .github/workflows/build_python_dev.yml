@@ -60,7 +60,8 @@ jobs:
         run: |
           mkdir -pv ${{ inputs.app_name }} && cd ${{ inputs.app_name }}
           git init
-          git remote add origin https://${{ secrets.CODEUP_USER }}:${{ secrets._GITHUB_PWD }}@${{ inputs.repository }}.git
+          # git remote add origin https://${{ secrets.CODEUP_USER }}:${{ secrets._GITHUB_PWD }}@${{ inputs.repository }}.git
+          git remote add origin ${{ inputs.repository }}
           git fetch --depth=1 origin ${{ inputs.ref }} 
           git checkout FETCH_HEAD
         
