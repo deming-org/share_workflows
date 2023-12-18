@@ -13,7 +13,7 @@ on:
         required: false
         type: string
       repository:
-        description: '仓库名, 不要带https://'
+        description: '仓库名, github仓库时只需要 <组织名>/<仓库名>'
         required: true
         type: string
       ref:
@@ -47,13 +47,18 @@ jobs:
       - name: 拉取代码 - svn仓库
         if: ${{ inputs.repo_type == 'svn' }}
         run: |
-          svn --version --quiet &&  echo -e "\033[33m我拉取了svn仓库\033[0m" || echo -e "\033[31msvn命令不存在\033[0m"
-        
+          REPO_ADDR=${{ inputs.repository }}
+          TAG_NAME="${REPO_ADDR##*/}"
+          REPO_NAME="${TAG_NAME%-*}"
+          mkdir -pv ${REPO_NAME} && cd ${REPO_NAME}
+          svn checkout  --username ${{ secrets.SVN_USER }} --password ${{ secrets.SVN_PWD }} --no-auth-cache ${{ inputs.repository }}/tags/${{ inputs.ref }}
+          cd ${{ inputs.ref }}
+
       - name: 拉取代码 - codeup仓库
         if: ${{ inputs.repo_type == 'codeup' }}
         run: |
           REPO_ADDR=${{ inputs.repository }}
-          REPO_NAME="${REPO##*/}"
+          REPO_NAME="${REPO_ADDR##*/}"
           mkdir -pv ${REPO_NAME} && cd ${REPO_NAME}
           git init
           git remote add origin https://${{ secrets.CODEUP_USER }}:${{ secrets._GITHUB_PWD }}@${{ inputs.repository }}.git
@@ -74,12 +79,11 @@ jobs:
         with:
           python-version: '3.9.13'
           
-      # - name: 安装依赖（测试代码需要）
-      #   run: |
-      #     python -c "import sys; print(sys.version)"
-      #     python -m pip install --upgrade pip
-      #     # pip install -r requirements.txt
-      #     echo "hello" > $(date +"%Y_%m_%d_%H_%M_%S").txt
+      - name: 安装依赖（测试代码需要）
+        run: |
+          python -c "import sys; print(sys.version)"
+          python -m pip install --upgrade pip
+          [[ -f requirements.txt ]] && pip install -r requirements.txt
           
       - name: 执行编译
         run: |
@@ -90,8 +94,8 @@ jobs:
           pwd && ls -a
           echo -e "\033[36m我是编译脚本，执行完成\033[0m" 
           
-      # - name: 测试代码
-      #   run: python app.py
+      - name: 测试代码
+        run: python app.py
         
       - name: 打包压缩
         run: |
