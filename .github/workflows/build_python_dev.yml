@@ -17,7 +17,8 @@ on:
         required: false
         type: string
       repository:
-        description: '仓库名, github仓库时只需要 <组织名>/<仓库名>'
+        # github仓库时只需要 <组织名>/<仓库名>，其他git仓库地址不要https://
+        description: '仓库名'
         required: true
         type: string
       ref:
@@ -60,8 +61,8 @@ jobs:
         run: |
           mkdir -pv ${{ inputs.app_name }} && cd ${{ inputs.app_name }}
           git init
-          # git remote add origin https://${{ secrets.CODEUP_USER }}:${{ secrets._GITHUB_PWD }}@${{ inputs.repository }}.git
-          git remote add origin ${{ inputs.repository }}
+          git remote add origin https://${{ secrets.CODEUP_USER }}:${{ secrets.CODEUP_PWD }}@${{ inputs.repository }}
+          # git remote add origin ${{ inputs.repository }}
           git fetch --depth=1 origin ${{ inputs.ref }} 
           git checkout FETCH_HEAD
         
