@@ -52,14 +52,12 @@ jobs:
       - name: 拉取代码 - svn仓库
         if: ${{ inputs.repo_type == 'svn' }}
         run: |
-          mkdir -pv ${{ inputs.app_name }} && cd ${{ inputs.app_name }}
           svn checkout  --username ${{ secrets.SVN_USER }} --password ${{ secrets.SVN_PWD }} --no-auth-cache ${{ inputs.repository }}/tags/${{ inputs.ref }}
-          cd ${{ inputs.ref }}
+          mv -f ${{ inputs.ref }}/* ./ && rm -rf ${{ inputs.ref }}
 
       - name: 拉取代码 - codeup仓库
         if: ${{ inputs.repo_type == 'codeup' }}
         run: |
-          mkdir -pv ${{ inputs.app_name }} && cd ${{ inputs.app_name }}
           git init
           git remote add origin https://${{ secrets.CODEUP_USER }}:${{ secrets.CODEUP_PWD }}@${{ inputs.repository }}
           # git remote add origin ${{ inputs.repository }}
