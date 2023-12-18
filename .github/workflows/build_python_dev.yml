@@ -82,9 +82,11 @@ jobs:
           
       - name: 安装依赖（测试代码需要）
         run: |
+          pwd && ls -at1
           python -c "import sys; print(sys.version)"
           python -m pip install --upgrade pip
           [[ -f requirements.txt ]] && pip install -r requirements.txt
+          echo -e "033[33m end \033[0m"
           
       - name: 执行编译
         run: |
