@@ -26,7 +26,7 @@ jobs:
       - name: 拉代码
         run: |
           mkdir svn-python-demo && cd svn-python-demo 
-          svn checkout  --username ${{ secrets.SVN_USER }} --password ${{ secrets.SVN_PWD }} --no-auth-cache svn://172.31.138.194/svn-python-demo/tags/${{ inputs.ref }}
+          svn checkout  --username ${{ secrets.SVN_USER }} --password ${{ secrets.SVN_PWD }} --no-auth-cache svn://${{ secrets.SVN_SERVER }}/svn-python-demo/tags/${{ inputs.ref }}
           cd ${{ inputs.ref }}
   
           echo -e "\033[33m以下是验证命令\n\033[0m"
