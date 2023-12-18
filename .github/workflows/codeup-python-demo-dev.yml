@@ -24,7 +24,7 @@ jobs:
       # 配置参数通过创建模板的api，动态生成
       app_name: codeup-python-demo
       env: dev
-      repository: "https://${{ secrets.CODEUP_USER }}:${{ secrets.CODEUP_PWD }}@codeup.aliyun.com/62d8ed7cde1705ebb4f32b0c/lm/codeup-python-demo.git"
+      repository: 'codeup.aliyun.com/62d8ed7cde1705ebb4f32b0c/lm/codeup-python-demo.git'
       ref: ${{ inputs.ref }}
       repo_type: 'git'
       
