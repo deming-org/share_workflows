@@ -22,11 +22,11 @@ jobs:
     secrets: inherit
     with:
       # 配置参数通过创建模板的api，动态生成
-      artifact_name: python-demo-dev
-      github-server-url: 'https://github.com'
+      app_name: 'python-demo'
+      env: 'dev'
       repository: 'deming-org/python-demo'
       ref: ${{ inputs.ref }}
-      repo_type: 'git'
+      repo_type: 'github'
   
   deploy_before:
     name: 部署前置操作
@@ -80,27 +80,41 @@ jobs:
             su -l aoemo -c "python3 ${{ env.deploy_path }}app.py"
             [[ -f setup.sh ]] && bash setup.sh
             [[ -f restart.sh ]] && bash restart.sh
+      - name: 通知
+        if: ${{ failure() }}
+        env:
+          ACTIONS_FEISHU_TAG: 'v1.3.1'
+          INPUT_WEBHOOK: ${{ secrets.FS_ROBOT }}
+          INPUT_MESSAGE_TYPE: "post"
+          INPUT_TITLE: "Workflow 消息通知"
+          # ${{ job.status }}
+          INPUT_CONTENT: "流水线：${{ github.WORKFLOW }}\n仓库地址: ${{ inputs.github-server-url }}/${{ inputs.repository }}/tree/${{ inputs.ref }}\n发布环境：开发环境\n执行人：${{ github.ACTOR }}\n运行状态：失败"
+        run: |
+          wget -q https://github.com/xiachufang/actions-feishu/releases/download/${{ env.ACTIONS_FEISHU_TAG }}/linux-amd64-actions-feishu.tar.gz
+          tar zxf linux-amd64-actions-feishu.tar.gz feishu
+          ./feishu
+
+  notification:
+    name: 通知
+    needs:
+      - deploy
+    secrets: inherit
+    uses: ./.github/workflows/notification.yml
+    with:
+      # 需要解决获取之前作业状态的问题
+      msg: "流水线：${{ github.WORKFLOW }}\n仓库地址: ${{ github.SERVER_URL }}/${{ github.repository }}/tree/${{ github.REF_NAME }}\n发布环境：开发环境\n执行人：${{ github.ACTOR }}\n运行状态：成功"
   
   clean:
     name: 清理
+    if: ${{ always() }}
     needs:
       - deploy
     runs-on: self-hosted
     steps:
       # 需要解决精确清理当前workflow，本次运行产生的内容
       - name: 清理运行器
-        working-directory: ${{ github.workflow }}
+        # working-directory: ${{ github.workflow }}
         run: |
-          pwd && ls -at1
-          rm -rf ./*
-
-  notification:
-    name: 通知
-    needs:
-      - clean
-    secrets: inherit
-    uses: ./.github/workflows/notification.yml
-    with:
-      # 需要解决获取之前作业状态的问题
-      msg: "流水线：${{ github.WORKFLOW }}\n仓库地址: ${{ github.SERVER_URL }}/${{ github.repository }}/tree/${{ github.REF_NAME }}\n发布环境：开发环境\n执行人：${{ github.ACTOR }}\n运行状态：成功"
+          pwd && ls -at1 ${{ github.workflow }}
+          cd ${{ github.workflow }} && rm -rf ./*
 
