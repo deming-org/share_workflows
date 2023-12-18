@@ -108,7 +108,7 @@ jobs:
   notification:
     name: 成功通知
     needs:
-      - clean
+      - deploy
     secrets: inherit
     uses: ./.github/workflows/notification.yml
     with:
