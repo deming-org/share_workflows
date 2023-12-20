@@ -1,0 +1,40 @@
+name: 'Build test'
+description: '编译和单元测试'
+inputs:
+  build_cmd:
+    description: '编译命令'
+    required: false
+    type: string
+  dependency_cmd:
+    description: '依赖安装命令'
+    required: false
+    type: string
+  test_cmd:
+    description: '测试命令'
+    required: false
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: 打印变量
+      run: |
+        echo -e "\033[33m build_cmd：${{ inputs.build_cmd }}\033[0m"
+        echo -e "\033[33m dependency_cmd：${{ inputs.dependency_cmd }}\033[0m"
+        echo -e "\033[33m test_cmd：${{ inputs.test_cmd }}\033[0m"
+      shell: bash
+      
+    - name: 执行编译命令
+      if: ${{ inputs.build_cmd != '' }}
+      run: echo "${{ inputs.build_cmd }}" | bash 
+      shell: bash
+      
+    - name: 安装依赖
+      if: ${{ inputs.dependency_cmd != '' }}
+      run: echo "${{ inputs.dependency_cmd }}" | bash 
+      shell: bash
+      
+    - name: 执行单元测试
+      if: ${{ inputs.test_cmd != '' }}
+      run: echo "${{ inputs.test_cmd }}" | bash 
+      shell: bash
