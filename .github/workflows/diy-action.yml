@@ -14,20 +14,27 @@ jobs:
     name: '测试使用'
     steps:
       - uses: actions/checkout@v4.1.1
-      - name: 测试编译action
-        uses: ./.github/actions/action-build
-        with:
-          # language_type: 'python'
-          # version: '3.9.13'
-          # build_cmd: 'python -V && which python && which python3.9'
+      # - name: 测试编译action
+      #   uses: ./.github/actions/action-build
+      #   with:
+      #     # language_type: 'python'
+      #     # version: '3.9.13'
+      #     # build_cmd: 'python -V && which python && which python3.9'
           
-          # language_type: 'go'
-          # version: '1.19'
-          # build_cmd: 'go version && which go'
+      #     # language_type: 'go'
+      #     # version: '1.19'
+      #     # build_cmd: 'go version && which go'
 
-          language_type: 'node'
-          version: '14.21'
-          build_cmd: 'node -v && which node'
+      #     language_type: 'node'
+      #     version: '14.21'
+      #     build_cmd: 'node -v && which node'
+      
+      - name: 测试通知action
+        uses: ./.github/actions/action-notification
+        with:
+          channel_type: 'feishu'
+          send_addr: "${{ secrets.FS_ROBOT }}"
+          content: '测试消息，通过自定义的action发送'
           
       - name: 验证
         run: |
