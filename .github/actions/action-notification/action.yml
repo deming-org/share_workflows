@@ -1,0 +1,40 @@
+name: 'Notification'
+description: '消息通知'
+inputs:
+  channel_type:
+    description: '通知渠道'
+    default: 'feishu'
+    required: false
+    type: string
+  send_addr:
+    description: '通知地址'
+    required: true
+    type: string
+  content:
+    description: '通知内容'
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: 打印变量
+      run: |
+        echo -e "\033[33m channel_type：${{ inputs.channel_type }}\033[0m"
+        echo -e "\033[33m content：${{ inputs.content }}\033[0m"
+      shell: bash
+      
+    - name: 飞书通知
+      if: ${{ inputs.repo_type == 'feishu' }}
+      env:
+        ACTIONS_FEISHU_TAG: 'v1.3.1'
+        INPUT_WEBHOOK: ${{ inputs.send_addr }}
+        INPUT_MESSAGE_TYPE: "post"
+        INPUT_TITLE: "Workflow 消息通知"
+        INPUT_CONTENT: "${{ inputs.content }}"
+      run: |
+        wget -q https://github.com/xiachufang/actions-feishu/releases/download/${{ env.ACTIONS_FEISHU_TAG }}/linux-amd64-actions-feishu.tar.gz
+        tar zxf linux-amd64-actions-feishu.tar.gz feishu
+        ./feishu
+      shell: bash
+    
