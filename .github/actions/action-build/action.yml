@@ -47,7 +47,7 @@ runs:
       # shell: bash
        
     - name: NodeJs项目编译
-      if: ${{ inputs.language_type == 'python' }}
+      if: ${{ inputs.language_type == 'node' }}
       uses: actions/setup-node@v4.0.1
       with:
         # 例如: 12.x, 10.15.1, >=10.15.0.
