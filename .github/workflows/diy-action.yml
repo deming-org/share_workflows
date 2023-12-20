@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     name: '测试使用'
     steps:
+      - uses: actions/checkout@v4.1.1
       - name: 测试编译action
         uses: ./.github/actions/action-build
         with:
@@ -30,7 +31,7 @@ jobs:
           
       - name: 验证
         run: |
-          pwd && ls -lt
+          pwd && ls -lat
       # - name: 上面有步骤失败才执行
       #   if: ${{ failure() }}
       #   run: |
