@@ -1,0 +1,68 @@
+name: 'Checkout'
+description: '从不同版本控制仓库拉取代码'
+inputs:
+  repo_type:
+    description: '仓库类型'
+    default: 'github'
+    required: false
+    type: string
+  repository:
+    description: '仓库名（github仓库时只需要 <组织名>/<仓库名>，其他git仓库地址不要https://）'
+    required: true
+    type: string
+  ref:
+    description: '分支或标签'
+    required: true
+    type: string
+  username:
+    description: '仓库账号'
+    required: false
+    type: string
+  password:
+    description: '仓库密码或token'
+    required: true
+    type: string
+  github-server-url:
+    description: '仓库域名，仅针对github仓库'
+    default: 'https://github.com'
+    required: false
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: 打印变量
+      run: |
+        echo -e "\033[33m repo_type：${{ inputs.repo_type }}\033[0m"
+        echo -e "\033[33m github-server-url：${{ inputs.github-server-url }}\033[0m"
+        echo -e "\033[33m repository：${{ inputs.repository }}\033[0m"
+        echo -e "\033[33m ref：${{ inputs.ref }}\033[0m"
+        echo -e "\033[33m username：${{ inputs.username }}\033[0m"
+        echo -e "\033[33m password：${{ inputs.password }}\033[0m"
+      shell: bash
+      
+    - name: 拉取代码 - github仓库
+      if: ${{ inputs.repo_type == 'github' }}
+      uses: actions/checkout@v4.1.1
+      with: 
+        github-server-url: ${{ inputs.github-server-url }}
+        repository: ${{ inputs.repository }}
+        ref: ${{ inputs.ref }}
+        token: ${{ inputs.password }}
+      
+    - name: 拉取代码 - svn仓库
+      if: ${{ inputs.repo_type == 'svn' }}
+      run: |
+        svn checkout  --username ${{ inputs.username }} --password ${{ inputs.password }} --no-auth-cache ${{ inputs.repository }}/tags/${{ inputs.ref }}
+        mv -f ${{ inputs.ref }}/* ${{ inputs.ref }}/.svn ./
+        svn --username ${{ inputs.username }} --password ${{ inputs.password }} log && rm -rf ${{ inputs.ref }}
+      shell: bash
+
+    - name: 拉取代码 - codeup仓库
+      if: ${{ inputs.repo_type == 'codeup' }}
+      run: |
+        git init
+        git remote add origin https://${{ inputs.username }}:${{ inputs.password }}@${{ inputs.repository }}
+        git fetch --depth=1 origin ${{ inputs.ref }} 
+        git checkout FETCH_HEAD
+      shell: bash
