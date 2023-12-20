@@ -15,6 +15,10 @@ jobs:
     steps:
       - name: 拉取自定义的action
         uses: actions/checkout@v4.1.1
+          
+      - name: 验证
+        run: |
+          pwd && ls -lat .github/
         
       - name: 测试拉代码action
         uses: ./.github/actions/action-checkout
@@ -24,6 +28,10 @@ jobs:
           repository: 'deming-org/python-demo'
           ref: 'main'
           password: ${{ secrets.GH_TOKEN }}
+          
+      - name: 验证
+        run: |
+          pwd && ls -lat .github/
           
       # - name: 测试编译action
       #   uses: ./.github/actions/action-build
