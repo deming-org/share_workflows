@@ -19,7 +19,7 @@ jobs:
         with:
           language_type: 'python'
           version: '3.9.13'
-          build_cmd: 'which python && which python3.9'
+          build_cmd: 'python -V && which python && which python3.9'
           
           # language_type: 'go'
           # version: '1.19'
