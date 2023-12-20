@@ -1,0 +1,38 @@
+name: diy-action
+on: 
+  workflow_dispatch:
+    # inputs:
+    #   ref:
+    #     description: '分支或标签(正式使用的时候不要给默认值)'
+    #     default: 'svn-python-demo-2.0.0'
+    #     required: true
+    #     type: string
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: '测试使用'
+    steps:
+      - name: 测试编译action
+        uses: ./.github/actions/action-build
+        with:
+          language_type: 'python'
+          version: '3.9.13'
+          build_cmd: 'which python && which python3.9'
+          
+          # language_type: 'go'
+          # version: '1.19'
+          # build_cmd: 'go version'
+
+          # language_type: 'node'
+          # version: '14.21'
+          # build_cmd: 'node -v'
+          
+      - name: 验证
+        run: |
+          pwd && ls -lt
+      # - name: 上面有步骤失败才执行
+      #   if: ${{ failure() }}
+      #   run: |
+      #     pwd && ls -lt
+      #     echo -e "\033[31m前面有步骤失败了\033[0m"
