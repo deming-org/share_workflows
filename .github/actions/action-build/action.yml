@@ -1,0 +1,57 @@
+name: 'Build'
+description: '编译相关操作'
+inputs:
+  language_type:
+    description: '程序语言类型'
+    required: true
+    type: string
+  version:
+    description: '语言版本号'
+    required: true
+    type: string
+  build_cmd:
+    description: '编译命令'
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: 打印变量
+      run: |
+        echo -e "\033[33m language_type：${{ inputs.language_type }}\033[0m"
+        echo -e "\033[33m version：${{ inputs.version }}\033[0m"
+        echo -e "\033[33m build_cmd：${{ inputs.build_cmd }}\033[0m"
+      shell: bash
+      
+    - name: Python项目编译
+      if: ${{ inputs.language_type == 'python' }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: "${{ inputs.version }}"
+      run: |
+        echo -e "\033[33m 系统默认Python版本：$(python -V) \033[0m"
+        python3.9 -V || echo -e "\033[31m 没有安装python3.9版本 \033[0m"
+        python3.6 -V || echo -e "\033[31m 没有安装python3.6版本 \033[0m"
+        echo "${{ inputs.build_cmd }}" | bash 
+      
+    - name: Go项目编译
+      if: ${{ inputs.language_type == 'go' }}
+      uses: actions/setup-go@v5.0.0
+      with:
+        # 例如"1.19.2"
+        go-version: "${{ inputs.version }}"
+      run: |
+        echo -e "\033[33m 系统默认 go 版本：$(go version) \033[0m"
+        echo "${{ inputs.build_cmd }}" | bash 
+      # shell: bash
+       
+    - name: NodeJs项目编译
+      if: ${{ inputs.language_type == 'python' }}
+      uses: actions/setup-node@v4.0.1
+      with:
+        # 例如: 12.x, 10.15.1, >=10.15.0.
+        node-version: "${{ inputs.version }}"
+      run: |
+        echo -e "\033[33m 系统默认 node 版本：$(node -v) \033[0m"
+        echo "${{ inputs.build_cmd }}" | bash 
