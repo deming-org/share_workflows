@@ -21,6 +21,7 @@ runs:
     - name: 打印变量
       run: |
         echo -e "\033[33m channel_type：${{ inputs.channel_type }}\033[0m"
+        echo -e "\033[33m send_addr：${{ inputs.send_addr }}\033[0m"
         echo -e "\033[33m content：${{ inputs.content }}\033[0m"
       shell: bash
       
