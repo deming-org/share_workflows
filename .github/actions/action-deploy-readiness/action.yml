@@ -1,0 +1,26 @@
+name: 'Deploy readliness'
+description: '部署前准备操作'
+inputs:
+  artifact_name:
+    description: '制品名称'
+    required: true
+    type: string
+  
+runs:
+  using: "composite"
+  steps:
+    - name: 打印变量
+      run: |
+        echo -e "\033[33m artifact_name：${{ inputs.artifact_name }}\033[0m"
+      shell: bash
+      
+    - name: 预建工作目录
+      run: mkdir -pv ${{ github.workflow }}
+      shell: bash
+      
+    - name: 下载制品
+      uses: actions/download-artifact@v3.0.2
+      with:
+        # 制品名称和build环节保持一致
+        name: ${{ inputs.artifact_name }}
+        path: ${{ github.workflow }}
