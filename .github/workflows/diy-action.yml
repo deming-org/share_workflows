@@ -21,13 +21,13 @@ jobs:
           # version: '3.9.13'
           # build_cmd: 'python -V && which python && which python3.9'
           
-          language_type: 'go'
-          version: '1.19'
-          build_cmd: 'go version && which go'
+          # language_type: 'go'
+          # version: '1.19'
+          # build_cmd: 'go version && which go'
 
-          # language_type: 'node'
-          # version: '14.21'
-          # build_cmd: 'node -v && which node'
+          language_type: 'node'
+          version: '14.21'
+          build_cmd: 'node -v && which node'
           
       - name: 验证
         run: |
