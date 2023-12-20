@@ -21,6 +21,9 @@ jobs:
         with:
           path: '../actions_temp'
           
+      - name: 创建action存放目录
+        run: mv -f ../actions_temp/.github  ./
+          
       - name: 验证
         run: |
           pwd && ls -lat .github/
@@ -37,7 +40,7 @@ jobs:
           
       - name: 验证
         run: |
-          pwd && ls -lat .github/
+          pwd && tree ./
           
       # - name: 测试编译action
       #   uses: ./.github/actions/action-build
