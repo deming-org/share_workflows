@@ -13,7 +13,18 @@ jobs:
     runs-on: ubuntu-latest
     name: '测试使用'
     steps:
-      - uses: actions/checkout@v4.1.1
+      - name: 拉取自定义的action
+        uses: actions/checkout@v4.1.1
+        
+      - name: 测试拉代码action
+        uses: ./.github/actions/action-checkout
+        with:
+          # 参数通过创建模板的api，动态生成
+          repo_type: 'github'
+          repository: 'deming-org/python-demo'
+          ref: 'main'
+          password: ${{ secrets.GH_TOKEN }}
+          
       # - name: 测试编译action
       #   uses: ./.github/actions/action-build
       #   with:
@@ -29,12 +40,12 @@ jobs:
       #     version: '14.21'
       #     build_cmd: 'node -v && which node'
       
-      - name: 测试通知action
-        uses: ./.github/actions/action-notification
-        with:
-          channel_type: 'feishu'
-          send_addr: "${{ secrets.FS_ROBOT }}"
-          content: '测试消息，通过自定义的action发送'
+      # - name: 测试通知action
+      #   uses: ./.github/actions/action-notification
+      #   with:
+      #     channel_type: 'feishu'
+      #     send_addr: "${{ secrets.FS_ROBOT }}"
+      #     content: '测试消息，通过自定义的action发送'
           
       - name: 验证
         run: |
