@@ -13,12 +13,18 @@ jobs:
     runs-on: ubuntu-latest
     name: '测试使用'
     steps:
+      - name: 创建action存放目录
+        run: mkdir -pv ../actions_temp
+        
       - name: 拉取自定义的action
         uses: actions/checkout@v4.1.1
+        with:
+          path: '../actions_temp'
           
       - name: 验证
         run: |
           pwd && ls -lat .github/
+          pwd && tree ../actions_temp/.github/
         
       - name: 测试拉代码action
         uses: ./.github/actions/action-checkout
