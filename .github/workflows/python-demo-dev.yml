@@ -24,7 +24,9 @@ jobs:
           path: 'actions_temp'
           
       - name: 拷贝action文件
-        run: mv -f actions_temp/.github  ./
+        run: |
+          mv -f actions_temp/.github  ./
+          rm -rf actions_temp
         
       - name: 拉代码
         uses: ./.github/actions/action-checkout
@@ -53,7 +55,8 @@ jobs:
         
       - name: 打包压缩
         run: |
-          rm -rf .git* .svn*
+          # 不能删除.github中的内容
+          rm -rf .svn* .git .gitignore
           # <仓库名>-<环境代号>.tgz, 参数通过创建模板的api，动态生成
           tar -zcvf python-demo-dev.tgz *
           ls -l python-demo-dev.tgz && tar -tzvf python-demo-dev.tgz
