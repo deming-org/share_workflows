@@ -33,7 +33,7 @@ runs:
          {
               \"msgtype\": \"text\",
               \"text\": {
-                  \"content\": ${{ inputs.content }}\"\"
+                  \"content\": \"${{ inputs.content }}\"
               }
          }"
       shell: bash
