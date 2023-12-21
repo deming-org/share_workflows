@@ -41,7 +41,7 @@ jobs:
           # 参数通过创建模板的api，动态生成
           language_type: 'python'
           version: '3.9.13'
-          build_cmd: "echo -e \"\033[33m 我是编译命令,Python版本：$(python -V)\033[0m\""
+          build_cmd: "echo -ne \"\033[33m 我是编译命令,Python版本：\033[0m\" && python -V"
           
       - name: 单元测试
         uses: ./.github/actions/action-unit-test
