@@ -61,7 +61,7 @@ jobs:
           # 不能删除.github中的内容
           rm -rf .svn* .git .gitignore
           # <仓库名>-<环境代号>.tgz, 参数通过创建模板的api，动态生成
-          tar -zcvf python-demo-dev.tgz *
+          tar -zcvf python-demo-dev.tgz --exclude="actions_temp" *
           ls -l python-demo-dev.tgz && tar -tzvf python-demo-dev.tgz
 
       - name: 上传代码包
