@@ -166,7 +166,7 @@ jobs:
   
   clean:
     name: 清理作业
-    if: ${{ always() }}
+    if: ${{ !cancelled() }}
     needs:
       - deploy
     runs-on: self-hosted
