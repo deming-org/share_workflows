@@ -22,7 +22,7 @@ runs:
       run: |
         echo -e "\033[33m channel_type：${{ inputs.channel_type }}\033[0m"
         echo -e "\033[33m send_addr：${{ inputs.send_addr }}\033[0m"
-        echo -e "\033[33m content：${{ inputs.content }}\033[0m"
+        # echo -e "\033[33m content：${{ inputs.content }}\033[0m"
       shell: bash
       
     # - name: 飞书通知
@@ -50,9 +50,9 @@ runs:
         content: |
           # text: "${{ inputs.content }}"
           text: |
-            **Workflow运行通知**
             "${{ inputs.content }}"
           # text: |
+          #   **Workflow运行通知**
           #   "${{ inputs.content }}"
           
     
