@@ -15,8 +15,16 @@ jobs:
     name: 编译作业
     runs-on: ubuntu-latest
     steps:
+      - name: 创建action存放目录
+        run: mkdir -v actions_temp
+        
       - name: 拉取自定义的action
         uses: actions/checkout@v4.1.1
+        with:
+          path: 'actions_temp'
+          
+      - name: 拷贝action文件
+        run: mv -f actions_temp/.github  ./
         
       - name: 拉代码
         uses: ./.github/actions/action-checkout
