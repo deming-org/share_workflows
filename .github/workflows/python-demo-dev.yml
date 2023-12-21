@@ -48,7 +48,7 @@ jobs:
         uses: ./.github/actions/action-unit-test
         with:
           # 参数通过创建模板的api，动态生成
-          dependency_cmd: "python -m pip install --upgrade pip; [[ -f requirements.txt ]] || pip install -r requirements.txt"
+          dependency_cmd: "python -m pip install --upgrade pip; [[ -f requirements.txt ]] && pip install -r requirements.txt"
           test_cmd: 'python3 app.py'
         
       - name: 打包压缩
