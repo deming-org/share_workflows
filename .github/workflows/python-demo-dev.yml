@@ -23,13 +23,14 @@ jobs:
         with:
           path: 'actions_temp'
           
-      - name: 拷贝action文件
-        run: |
-          mv -f actions_temp/.github  ./
-          rm -rf actions_temp
+      # - name: 拷贝action文件
+      #   run: |
+      #     mv -f actions_temp/.github  ./
+      #     rm -rf actions_temp
         
       - name: 拉代码
-        uses: ./.github/actions/action-checkout
+        # uses: ./.github/actions/action-checkout
+        uses: ./actions_temp/.github/actions/action-checkout
         with:
           # 参数通过创建模板的api，动态生成
           repo_type: 'github'
@@ -38,7 +39,8 @@ jobs:
           password: ${{ secrets.GH_TOKEN }}
 
       - name: 编译
-        uses: ./.github/actions/action-build
+        # uses: ./.github/actions/action-build
+        uses: ./actions_temp/.github/actions/action-build
         with:
           # 参数通过创建模板的api，动态生成
           language_type: 'python'
@@ -47,7 +49,8 @@ jobs:
           build_cmd: "echo -ne '我是编译命令,Python版本：'"
           
       - name: 单元测试
-        uses: ./.github/actions/action-unit-test
+        # uses: ./.github/actions/action-unit-test
+        uses: ./actions_temp/.github/actions/action-unit-test
         with:
           # 参数通过创建模板的api，动态生成
           dependency_cmd: "python -m pip install --upgrade pip; [[ -f requirements.txt ]] && pip install -r requirements.txt || echo '没有依赖文件'"
@@ -70,7 +73,8 @@ jobs:
           
       - name: 作业失败通知
         if: ${{ failure() }}
-        uses: ./.github/actions/action-notification
+        # uses: ./.github/actions/action-notification
+        uses: ./actions_temp/.github/actions/action-notification
         with:
           channel_type: 'feishu'
           send_addr: ${{ secrets.FS_ROBOT }}
@@ -91,6 +95,7 @@ jobs:
         # working-directory: py
         
       - name: 准备操作
+        # 参数通过创建模板的api，动态生成
         uses: ./python-demo-dev/.github/actions/action-deploy-readiness
         with:
           # 参数通过创建模板的api，动态生成
@@ -98,6 +103,7 @@ jobs:
           
       - name: 作业失败通知
         if: ${{ failure() }}
+        # 参数通过创建模板的api，动态生成
         uses: ./python-demo-dev/.github/actions/action-notification
         with:
           channel_type: 'feishu'
@@ -105,79 +111,80 @@ jobs:
           # 参数通过创建模板的api，动态生成
           content: "流水线：${{ github.WORKFLOW }}(${{ github.SERVER_URL }}/${{ github.REPOSITORY }}/actions/runs/${{ github.RUN_ID }})\n部署次数：${{ github.RUN_NUMBER }}\n发布环境：dev\n执行人：${{ github.ACTOR }}\n当前作业:${{ github.JOB }}\n运行状态：失败"
         
-  # deploy:
-  #   # environment: prod  # 如果作业想设置人工审核，需要关联环境，并给环境配置保护规则
-  #   name: 主机部署作业
-  #   needs:
-  #     - deploy_before
-  #   runs-on: self-hosted
-  #   env:
-  #     app_name: python-demo-dev  # <仓库名>-<环境代号>
-  #     deploy_path: /data/python-demo/  # 部署路径：/data/<仓库名>
-  #     deploy_user: aoemo  # 部署目录用户
-  #   strategy:
-  #     # max-parallel: 2  # 并发控制
-  #     matrix:
-  #       # 参数通过创建模板的api，动态生成
-  #       host: ['172.31.94.47', '172.31.94.49']
-  #   steps:
-  #     - name: 执行部署脚本
-  #       uses: easingthemes/ssh-deploy@v5.0.0
-  #       with:
-  #         REMOTE_HOST: ${{ matrix.host }}
-  #         # REMOTE_PORT: 22
-  #         REMOTE_USER: ${{ secrets.SSH_USER }}
-  #         SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
-  #         SOURCE: ${{ github.WORKFLOW }}/python-demo-dev.tgz
-  #         TARGET: /tmp/app/
-  #         # # Arguments to pass to rsync
-  #         # ARGS: # optional, default is -rlgoDzvc -i
-  #         SCRIPT_BEFORE: |
-  #           echo -e "\033[36m我是部署前操作\033[0m"
-  #           echo -e "\033[33m当前主机ip：$(curl -m 3 -s ifconfig.me)\033[0m"
+  deploy:
+    # environment: prod  # 如果作业想设置人工审核，需要关联环境，并给环境配置保护规则
+    name: 主机部署作业
+    needs:
+      - deploy_before
+    runs-on: self-hosted
+    env:
+      app_name: python-demo-dev  # <仓库名>-<环境代号>
+      deploy_path: /data/python-demo/  # 部署路径：/data/<仓库名>
+      deploy_user: aoemo  # 部署目录用户
+    strategy:
+      # max-parallel: 2  # 并发控制
+      matrix:
+        # 参数通过创建模板的api，动态生成
+        host: ['172.31.94.47', '172.31.94.49']
+    steps:
+      - name: 执行部署脚本
+        uses: easingthemes/ssh-deploy@v5.0.0
+        with:
+          REMOTE_HOST: ${{ matrix.host }}
+          # REMOTE_PORT: 22
+          REMOTE_USER: ${{ secrets.SSH_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+          SOURCE: ${{ github.WORKFLOW }}/python-demo-dev.tgz
+          TARGET: /tmp/app/
+          # # Arguments to pass to rsync
+          # ARGS: # optional, default is -rlgoDzvc -i
+          SCRIPT_BEFORE: |
+            echo -e "\033[36m我是部署前操作\033[0m"
+            echo -e "\033[33m当前主机ip：$(curl -m 3 -s ifconfig.me)\033[0m"
             
-  #           [[ -d ${{ env.deploy_path }} ]] || mkdir -pv ${{ env.deploy_path }}
-  #           cd ${{ env.deploy_path }} && rm -rf *
-  #         SCRIPT_AFTER: |
-  #           echo -e "\033[36m我是部署后操作\033[0m"
-  #           echo -e "\033[33m当前主机ip：$(curl -m 3 -s ifconfig.me)\033[0m"
+            [[ -d ${{ env.deploy_path }} ]] || mkdir -pv ${{ env.deploy_path }}
+            cd ${{ env.deploy_path }} && rm -rf *
+          SCRIPT_AFTER: |
+            echo -e "\033[36m我是部署后操作\033[0m"
+            echo -e "\033[33m当前主机ip：$(curl -m 3 -s ifconfig.me)\033[0m"
             
-  #           tar -zxvf /tmp/app/${{ env.app_name }}.tgz -C ${{ env.deploy_path }}
-  #           chown -R ${{ env.deploy_user }}.${{ env.deploy_user }}  ${{ env.deploy_path }}
-  #           pwd && ls -al ${{ env.deploy_path }}
-  #           su -l aoemo -c "python3 ${{ env.deploy_path }}app.py"
-  #           [[ -f setup.sh ]] && bash setup.sh
-  #           [[ -f restart.sh ]] && bash restart.sh
+            tar -zxvf /tmp/app/${{ env.app_name }}.tgz -C ${{ env.deploy_path }}
+            chown -R ${{ env.deploy_user }}.${{ env.deploy_user }}  ${{ env.deploy_path }}
+            pwd && ls -al ${{ env.deploy_path }}
+            su -l aoemo -c "python3 ${{ env.deploy_path }}app.py"
+            [[ -f setup.sh ]] && bash setup.sh
+            [[ -f restart.sh ]] && bash restart.sh
 
-  #     - name: 作业失败通知
-  #       if: ${{ failure() }}
-  #       uses: ./.github/actions/action-notification
-  #       with:
-  #         channel_type: 'feishu'
-  #         send_addr: ${{ secrets.FS_ROBOT }}
-  #         # 参数通过创建模板的api，动态生成
-  #         content: "流水线：${{ github.WORKFLOW }}(${{ github.SERVER_URL }}/${{ github.REPOSITORY }}/actions/runs/${{ github.RUN_ID }})\n部署次数：${{ github.RUN_NUMBER }}\n发布环境：dev\n执行人：${{ github.ACTOR }}\n当前作业:${{ github.JOB }}\n运行状态：失败"
+      - name: 作业失败通知
+        if: ${{ failure() }}
+        # uses: ./.github/actions/action-notification
+        # 参数通过创建模板的api，动态生成
+        uses: ./python-demo-dev/.github/actions/action-notification
+        with:
+          channel_type: 'feishu'
+          send_addr: ${{ secrets.FS_ROBOT }}
+          # 参数通过创建模板的api，动态生成
+          content: "流水线：${{ github.WORKFLOW }}(${{ github.SERVER_URL }}/${{ github.REPOSITORY }}/actions/runs/${{ github.RUN_ID }})\n部署次数：${{ github.RUN_NUMBER }}\n发布环境：dev\n执行人：${{ github.ACTOR }}\n当前作业:${{ github.JOB }}\n运行状态：失败"
+
+  clean:
+    name: 收尾作业
+    if: ${{ !cancelled() }}
+    needs:
+      - deploy
+    runs-on: self-hosted
+    steps:
+      # 需要解决精确清理当前workflow，本次运行产生的内容
+      - name: 清理运行器
+        run: |
+          pwd && ls -at1 ${{ github.workflow }}
+          cd ${{ github.workflow }} && rm -rf ./*
+      - name: workflow结果通知
+        if: ${{ !cancelled() }}
+        # 参数通过创建模板的api，动态生成
+        uses: ./python-demo-dev/.github/actions/action-notification
+        with:
+          channel_type: 'feishu'
+          send_addr: ${{ secrets.FS_ROBOT }}
+          # 参数通过创建模板的api，动态生成
+          content: "流水线：${{ github.WORKFLOW }}\n部署次数：${{ github.RUN_NUMBER }}\n仓库地址: 动态生成\n发布环境：dev\n执行人：${{ github.ACTOR }}\n运行状态：成功"
         
-  # notification:
-  #   name: 通知作业
-  #   needs:
-  #     - deploy
-  #   secrets: inherit
-  #   uses: ./.github/workflows/notification.yml
-  #   with:
-  #     # 需要解决获取之前作业状态的问题
-  #     msg: "流水线：${{ github.WORKFLOW }}\n部署次数：${{ github.RUN_NUMBER }}\n仓库地址: 动态生成\n发布环境：dev\n执行人：${{ github.ACTOR }}\n运行状态：成功"
-  
-  # clean:
-  #   name: 清理作业
-  #   if: ${{ !cancelled() }}
-  #   needs:
-  #     - deploy
-  #   runs-on: self-hosted
-  #   steps:
-  #     # 需要解决精确清理当前workflow，本次运行产生的内容
-  #     - name: 清理运行器
-  #       run: |
-  #         pwd && ls -at1 ${{ github.workflow }}
-  #         cd ${{ github.workflow }} && rm -rf ./*
-
