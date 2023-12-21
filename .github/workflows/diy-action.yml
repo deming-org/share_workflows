@@ -52,15 +52,7 @@ jobs:
         with:
           channel_type: 'feishu'
           send_addr: "${{ secrets.FS_ROBOT }}"
-          content: |
-            text: |
-              '测试消息，通过自定义的action发送'
-              流水线：diy-action
-              部署次数：1
-              仓库地址: 动态生成
-              发布环境：dev
-              执行人：bestboylm
-              运行状态：成功
+          content: "测试消息，通过自定义的action发送\n流水线：diy-action"
       
       - name: 验证
         run: |
