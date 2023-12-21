@@ -13,7 +13,7 @@ inputs:
   content:
     description: '通知内容'
     required: true
-    # type: string
+    type: string
 
 runs:
   using: "composite"
