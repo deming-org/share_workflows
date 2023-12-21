@@ -27,15 +27,7 @@ runs:
       
     - name: 飞书通知
       run: |
-        curl "${{ inputs.send_addr }}" \
-        -H "Content-Type: application/json" \
-        -d "
-         {
-              \"msgtype\": \"text\",
-              \"text\": {
-                  \"content\": \"${{ inputs.content }}\"
-              }
-         }"
+        curl "${{ inputs.send_addr }}" -H "Content-Type: application/json" -d "{\"msgtype\": \"text\", \"text\": {\"content\": \"${{ inputs.content }}\"}}"
       shell: bash
       
     
