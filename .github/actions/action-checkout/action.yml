@@ -61,6 +61,7 @@ runs:
       if: ${{ inputs.repo_type == 'github' }}
       run: |
         mv code_repo/* ./
+        rm -rf code_repo
       shell: bash
       
     - name: 拉取代码 - svn仓库
@@ -80,4 +81,5 @@ runs:
         git fetch --depth=1 origin ${{ inputs.ref }} 
         git checkout FETCH_HEAD
         mv ./* ../
+        cd ../ && rm -rf code_repo
       shell: bash
