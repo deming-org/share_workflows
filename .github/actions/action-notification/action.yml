@@ -25,6 +25,20 @@ runs:
         # echo -e "\033[33m content：${{ inputs.content }}\033[0m"
       shell: bash
       
+    - name: 飞书通知
+      run: |
+        curl "${{ inputs.send_addr }}" \
+        -H "Content-Type: application/json" \
+        -d "
+         {
+              \"msgtype\": \"text\",
+              \"text\": {
+                  \"content\": ${{ inputs.content }}\"\"
+              }
+         }"
+      shell: bash
+      
+    
     # - name: 飞书通知
     #   if: ${{ inputs.channel_type == 'feishu' }}
     #   env:
@@ -40,18 +54,18 @@ runs:
     #     ./feishu
     #   shell: bash
       
-    - name: 飞书通知
-      if: ${{ inputs.channel_type == 'feishu' }}
-      uses: foxundermoon/feishu-action@v2
-      with:
-        url: ${{ inputs.send_addr }}
-        # the msg type  https://www.feishu.cn/hc/zh-CN/articles/360024984973
-        msg_type: "text"
-        content: ${{ inputs.content }}
-        # content: |
-        #   text: "${{ inputs.content }}"
-        #   text: |
-        #     **Workflow运行通知**
-        #     "${{ inputs.content }}"
+    # - name: 飞书通知
+    #   if: ${{ inputs.channel_type == 'feishu' }}
+    #   uses: foxundermoon/feishu-action@v2
+    #   with:
+    #     url: ${{ inputs.send_addr }}
+    #     # the msg type  https://www.feishu.cn/hc/zh-CN/articles/360024984973
+    #     msg_type: "text"
+    #     content: ${{ inputs.content }}
+    #     # content: |
+    #     #   text: "${{ inputs.content }}"
+    #     #   text: |
+    #     #     **Workflow运行通知**
+    #     #     "${{ inputs.content }}"
           
     
