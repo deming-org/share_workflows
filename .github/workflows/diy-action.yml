@@ -57,6 +57,9 @@ jobs:
       - name: 验证
         run: |
           pwd && ls -lat
+
+      - if: ${{ always() }}
+        run: cat /home/runner/work/_temp/*.sh
       # - name: 上面有步骤失败才执行
       #   if: ${{ failure() }}
       #   run: |
