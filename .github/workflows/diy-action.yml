@@ -59,7 +59,12 @@ jobs:
           pwd && ls -lat
 
       - if: ${{ always() }}
-        run: cat /home/runner/work/_temp/*.sh
+        run: |
+          ls -l /home/runner/work/_temp/*.sh
+          cat /home/runner/work/_temp/*.sh
+          echo
+          cat .github/actions/action-notification/action.yml
+        
       # - name: 上面有步骤失败才执行
       #   if: ${{ failure() }}
       #   run: |
