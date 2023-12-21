@@ -79,7 +79,7 @@ jobs:
           channel_type: 'feishu'
           send_addr: ${{ secrets.FS_ROBOT }}
           # 参数通过创建模板的api，动态生成
-          content: "流水线：${{ github.WORKFLOW }}(${{ github.SERVER_URL }}/${{ github.REPOSITORY }}/actions/runs/${{ github.RUN_ID }})\n部署次数：${{ github.RUN_NUMBER }}\n发布环境：dev\n执行人：${{ github.ACTOR }}\n当前作业:${{ github.JOB }}\n运行状态：失败"
+          content: "流水线：${{ github.WORKFLOW }}(${{ github.SERVER_URL }}/${{ github.REPOSITORY }}/actions/runs/${{ github.RUN_ID }})\\n部署次数：${{ github.RUN_NUMBER }}\\n发布环境：dev\\n执行人：${{ github.ACTOR }}\\n当前作业:${{ github.JOB }}\\n运行状态：失败"
         
   deploy_before:
     name: 部署准备作业
@@ -109,7 +109,7 @@ jobs:
           channel_type: 'feishu'
           send_addr: ${{ secrets.FS_ROBOT }}
           # 参数通过创建模板的api，动态生成
-          content: "流水线：${{ github.WORKFLOW }}(${{ github.SERVER_URL }}/${{ github.REPOSITORY }}/actions/runs/${{ github.RUN_ID }})\n部署次数：${{ github.RUN_NUMBER }}\n发布环境：dev\n执行人：${{ github.ACTOR }}\n当前作业:${{ github.JOB }}\n运行状态：失败"
+          content: "流水线：${{ github.WORKFLOW }}(${{ github.SERVER_URL }}/${{ github.REPOSITORY }}/actions/runs/${{ github.RUN_ID }})\\n部署次数：${{ github.RUN_NUMBER }}\\n发布环境：dev\\n执行人：${{ github.ACTOR }}\\n当前作业:${{ github.JOB }}\\n运行状态：失败"
         
   deploy:
     # environment: prod  # 如果作业想设置人工审核，需要关联环境，并给环境配置保护规则
@@ -164,7 +164,7 @@ jobs:
           channel_type: 'feishu'
           send_addr: ${{ secrets.FS_ROBOT }}
           # 参数通过创建模板的api，动态生成
-          content: "流水线：${{ github.WORKFLOW }}(${{ github.SERVER_URL }}/${{ github.REPOSITORY }}/actions/runs/${{ github.RUN_ID }})\n部署次数：${{ github.RUN_NUMBER }}\n发布环境：dev\n执行人：${{ github.ACTOR }}\n当前作业:${{ github.JOB }}\n运行状态：失败"
+          content: "流水线：${{ github.WORKFLOW }}(${{ github.SERVER_URL }}/${{ github.REPOSITORY }}/actions/runs/${{ github.RUN_ID }})\\n部署次数：${{ github.RUN_NUMBER }}\\n发布环境：dev\\n执行人：${{ github.ACTOR }}\\n当前作业:${{ github.JOB }}\\n运行状态：失败"
 
   round-off:
     name: 收尾作业
@@ -186,11 +186,5 @@ jobs:
           channel_type: 'feishu'
           send_addr: ${{ secrets.FS_ROBOT }}
           # 参数通过创建模板的api，动态生成
-          content: |
-              流水线：${{ github.WORKFLOW }}
-              部署次数：${{ github.RUN_NUMBER }}
-              仓库地址: 动态生成
-              发布环境：dev
-              执行人：${{ github.ACTOR }}
-              运行状态：成功"
+          content: "流水线：${{ github.WORKFLOW }}\\n部署次数：${{ github.RUN_NUMBER }}\\n仓库地址: 动态生成\\n发布环境：dev\\n执行人：${{ github.ACTOR }}\\n运行状态：成功"
         
