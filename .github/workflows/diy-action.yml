@@ -40,7 +40,7 @@ jobs:
           
       - name: 验证
         run: |
-          pwd && tree ./
+          pwd && tree -a ./
           
       # - name: 测试编译action
       #   uses: ./.github/actions/action-build
