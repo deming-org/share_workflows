@@ -26,17 +26,27 @@ runs:
       shell: bash
       
     - name: 飞书通知
+      # if: ${{ inputs.channel_type == 'feishu' }}
+      # env:
+      #   # 版本号如果更新， 需要到自托管服务器清理之前下载的代码包（linux-amd64-actions-feishu.tar.gz）
+      #   ACTIONS_FEISHU_TAG: 'v1.3.1'
+      #   INPUT_WEBHOOK: ${{ inputs.send_addr }}
+      #   INPUT_MESSAGE_TYPE: "post"
+      #   INPUT_TITLE: "Workflow 消息通知"
+      #   INPUT_CONTENT: "${{ inputs.content }}"
+      # run: |
+      #   [[ -f linux-amd64-actions-feishu.tar.gz ]] || wget -q https://github.com/xiachufang/actions-feishu/releases/download/${{ env.ACTIONS_FEISHU_TAG }}/linux-amd64-actions-feishu.tar.gz
+      #   [[ -f feishu ]]  || tar zxf linux-amd64-actions-feishu.tar.gz feishu
+      #   ./feishu
+      # shell: bash
+      
+    - name: 飞书通知
       if: ${{ inputs.channel_type == 'feishu' }}
-      env:
-        # 版本号如果更新， 需要到自托管服务器清理之前下载的代码包（linux-amd64-actions-feishu.tar.gz）
-        ACTIONS_FEISHU_TAG: 'v1.3.1'
-        INPUT_WEBHOOK: ${{ inputs.send_addr }}
-        INPUT_MESSAGE_TYPE: "post"
-        INPUT_TITLE: "Workflow 消息通知"
-        INPUT_CONTENT: "${{ inputs.content }}"
-      run: |
-        [[ -f linux-amd64-actions-feishu.tar.gz ]] || wget -q https://github.com/xiachufang/actions-feishu/releases/download/${{ env.ACTIONS_FEISHU_TAG }}/linux-amd64-actions-feishu.tar.gz
-        [[ -f feishu ]]  || tar zxf linux-amd64-actions-feishu.tar.gz feishu
-        ./feishu
-      shell: bash
+      uses: foxundermoon/feishu-action@v2
+      with:
+        url: ${{ inputs.send_addr }}
+        # the msg type  https://www.feishu.cn/hc/zh-CN/articles/360024984973
+        msg_type: "text"
+        content: "${{ inputs.content }}"
+          
     
