@@ -14,20 +14,20 @@ jobs:
     name: '测试使用'
     steps:
       - name: 创建action存放目录
-        run: mkdir -pv ../actions_temp
+        run: mkdir -v actions_temp
         
       - name: 拉取自定义的action
         uses: actions/checkout@v4.1.1
         with:
-          path: '../actions_temp'
+          path: 'actions_temp'
           
-      - name: 创建action存放目录
-        run: mv -f ../actions_temp/.github  ./
+      - name: 拷贝action文件
+        run: mv -f actions_temp/.github  ./
           
       - name: 验证
         run: |
-          pwd && ls -lat .github/
-          pwd && tree ../actions_temp/.github/
+          pwd && ls -lat actions_temp/
+          pwd && tree .github/
         
       - name: 测试拉代码action
         uses: ./.github/actions/action-checkout
