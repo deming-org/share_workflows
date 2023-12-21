@@ -41,6 +41,12 @@ runs:
         echo -e "\033[33m password：${{ inputs.password }}\033[0m"
       shell: bash
       
+    - name: 预建仓库目录 - github仓库
+      if: ${{ inputs.repo_type == 'github' }}
+      run: |
+        mkdir -v code_repo
+      shell: bash
+      
     - name: 拉取代码 - github仓库
       if: ${{ inputs.repo_type == 'github' }}
       uses: actions/checkout@v4.1.1
@@ -49,6 +55,13 @@ runs:
         repository: ${{ inputs.repository }}
         ref: ${{ inputs.ref }}
         token: ${{ inputs.password }}
+        path: 'code_repo'
+      
+    - name: 拷贝代码文件 - github仓库
+      if: ${{ inputs.repo_type == 'github' }}
+      run: |
+        mv code_repo/* ./
+      shell: bash
       
     - name: 拉取代码 - svn仓库
       if: ${{ inputs.repo_type == 'svn' }}
@@ -61,8 +74,10 @@ runs:
     - name: 拉取代码 - codeup仓库
       if: ${{ inputs.repo_type == 'codeup' }}
       run: |
+        mkdir -v code_repo && cd code_repo
         git init
         git remote add origin https://${{ inputs.username }}:${{ inputs.password }}@${{ inputs.repository }}
         git fetch --depth=1 origin ${{ inputs.ref }} 
         git checkout FETCH_HEAD
+        mv ./* ../
       shell: bash
