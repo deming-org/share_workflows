@@ -49,6 +49,8 @@ runs:
         msg_type: "text"
         content: |
           # text: "${{ inputs.content }}"
-          ${{ inputs.content }}
+          text: "${{ inputs.content }}"
+          # text: |
+          #   "${{ inputs.content }}"
           
     
