@@ -49,7 +49,9 @@ runs:
         msg_type: "text"
         content: |
           # text: "${{ inputs.content }}"
-          text: "${{ inputs.content }}"
+          text: |
+            **Workflow运行通知**
+            "${{ inputs.content }}"
           # text: |
           #   "${{ inputs.content }}"
           
