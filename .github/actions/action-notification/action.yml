@@ -50,7 +50,7 @@ runs:
         content: |
           # text: "${{ inputs.content }}"
           text: |
-            "${{ inputs.content }}"
+            ${{ inputs.content }}
           # text: |
           #   **Workflow运行通知**
           #   "${{ inputs.content }}"
