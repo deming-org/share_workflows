@@ -12,6 +12,7 @@ runs:
     - name: 打印变量
       run: |
         echo -e "\033[33m artifact_name：${{ inputs.artifact_name }}\033[0m"
+        echo -e "\033[33m workflow：${{ github.workflow }}\033[0m"
       shell: bash
       
     - name: 预建工作目录
