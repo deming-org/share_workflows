@@ -27,7 +27,7 @@ runs:
       
     - name: 飞书通知
       run: |
-        curl "${{ inputs.send_addr }}" -H "Content-Type: application/json" -d "{\"msg_type\": \"text\", \"content\": {\"text\": \"${{ inputs.content }}\"}}"
+        curl "${{ inputs.send_addr }}" -H "Content-Type: application/json" -d "{\"msg_type\": \"text\", \"content\": {\"text\": \"【Workflow运行通知】\\n${{ inputs.content }}\"}}"
       shell: bash
       
     
@@ -45,19 +45,4 @@ runs:
     #     [[ -f feishu ]]  || tar zxf linux-amd64-actions-feishu.tar.gz feishu
     #     ./feishu
     #   shell: bash
-      
-    # - name: 飞书通知
-    #   if: ${{ inputs.channel_type == 'feishu' }}
-    #   uses: foxundermoon/feishu-action@v2
-    #   with:
-    #     url: ${{ inputs.send_addr }}
-    #     # the msg type  https://www.feishu.cn/hc/zh-CN/articles/360024984973
-    #     msg_type: "text"
-    #     content: ${{ inputs.content }}
-    #     # content: |
-    #     #   text: "${{ inputs.content }}"
-    #     #   text: |
-    #     #     **Workflow运行通知**
-    #     #     "${{ inputs.content }}"
-          
     
