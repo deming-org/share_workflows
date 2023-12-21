@@ -1,4 +1,4 @@
-name: IOSBuilder
+name: ios-demo-dev
 
 on: 
   workflow_dispatch:
