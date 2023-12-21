@@ -33,8 +33,6 @@ jobs:
           
       - name: 拉取自定义的action
         uses: actions/checkout@v4.1.1
-        with:
-          path: 'actions_temp'
       
       # - name: 测试编译action
       #   uses: ./.github/actions/action-build
