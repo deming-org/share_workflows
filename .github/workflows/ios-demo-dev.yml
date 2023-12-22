@@ -64,6 +64,8 @@ jobs:
           echo -e "\033[33m flutter 版本查看完成\033[0m"
           dart --version || echo "\033[31m环境中没有 dart \033[0m"
           echo -e "\033[33m dart 版本查看完成\033[0m"
+          awk -V || echo "\033[31m环境中没有 awk \033[0m"
+          echo -e "\033[33m awk 版本查看完成\033[0m"
        
       - name: 安装依赖
         run: |
@@ -84,5 +86,4 @@ jobs:
         uses: actions/upload-artifact@v4.0.0
         with:
           name: ios-demo-dev
-          # Path to the release files
           path: build/ios/ipa/*.ipa
