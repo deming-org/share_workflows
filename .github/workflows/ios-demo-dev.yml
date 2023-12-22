@@ -65,10 +65,10 @@ jobs:
           dart --version || echo "\033[31m环境中没有 dart \033[0m"
           echo -e "\033[33m dart 版本查看完成\033[0m"
           ls -l /usr/libexec/PlistBuddy
-          bundleVersion=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "$infoPlist")
-          bundleBuildVersion=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "$infoPlist")
-          echo "bundleVersion 为: $bundleVersion"
-          echo "bundleBuildVersion 为: $bundleBuildVersion"
+          # bundleVersion=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "$infoPlist")
+          # bundleBuildVersion=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "$infoPlist")
+          # echo "bundleVersion 为: $bundleVersion"
+          # echo "bundleBuildVersion 为: $bundleBuildVersion"
           which PlistBuddy
        
       - name: 安装依赖
