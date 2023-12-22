@@ -14,13 +14,13 @@ jobs:
           repository: "deming-org/ios-demo"
           ref: "main"
     
-      - name: 创建证书配置目录
-        run: |
-         pwd && ls -at1
-         mkdir -pv ~/Library/MobileDevice/Provisioning\ Profiles
-         mkdir -pv ~/Library/MobileDevice/Certificates/
-         echo -e "\033[33m验证一下\033[0m"
-         ls -l ~/Library/MobileDevice/
+      # - name: 创建证书配置目录
+      #   run: |
+      #    pwd && ls -at1
+      #    mkdir -pv ~/Library/MobileDevice/Provisioning\ Profiles
+      #    mkdir -pv ~/Library/MobileDevice/Certificates/
+      #    echo -e "\033[33m验证一下\033[0m"
+      #    ls -l ~/Library/MobileDevice/
 
       # 参考文档：https://docs.github.com/zh/actions/deployment/deploying-xcode-applications/installing-an-apple-certificate-on-macos-runners-for-xcode-development
       - name: 安装苹果证书和 provisioning profile
@@ -54,9 +54,9 @@ jobs:
           
       - name: 查看证书配置目录
         run: |
-          echo "\033[33m 查看 Provisioning\ Profiles 目录\033[0m"
+          echo -e "\033[33m 查看 Provisioning\ Profiles 目录\033[0m"
           ls -l ~/Library/MobileDevice/Provisioning\ Profiles
-          echo "\033[33m 查看 Certificates 目录\033[0m"
+          echo -e "\033[33m 查看 Certificates 目录\033[0m"
           ls -l ~/Library/MobileDevice/Certificates/
 
       # - name: base64解码p12证书字符
