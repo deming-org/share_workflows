@@ -8,83 +8,111 @@ jobs:
     name: "编译作业"
     runs-on: macos-latest
     steps:
-     - name: 拉取仓库代码
-       uses: actions/checkout@v4.1.1
-       with: 
+      - name: 拉取仓库代码
+        uses: actions/checkout@v4.1.1
+        with: 
           repository: "deming-org/ios-demo"
           ref: "main"
-
-     - name: 创建证书配置目录
-       run: |
+    
+      - name: 创建证书配置目录
+        run: |
          pwd && ls -at1
          mkdir -pv ~/Library/MobileDevice/Provisioning\ Profiles
          mkdir -pv ~/Library/MobileDevice/Certificates/
          echo -e "\033[33m验证一下\033[0m"
          ls -l ~/Library/MobileDevice/
-       
-     - name: base64解码p12证书字符
-       id: certFileDecode
-       uses: timheuer/base64-to-file@v1.2.4
-       with:
-        fileName: 'certificate.p12'
-        encodedString: ${{ secrets.P12_BASE64 }}
-     - name: 拷贝证书
-       run: |
+
+      # # 参考文档：https://docs.github.com/zh/actions/deployment/deploying-xcode-applications/installing-an-apple-certificate-on-macos-runners-for-xcode-development
+      # - name: 安装苹果证书和 provisioning profile
+      #   env:
+      #     BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+      #     P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+      #     BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
+      #     KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+      #   run: |
+      #     # create variables
+      #     CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+      #     PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+      #     KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          
+      #     # import certificate and provisioning profile from secrets
+      #     echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+      #     echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
+          
+      #     # create temporary keychain
+      #     security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+      #     security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+      #     security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          
+      #     # import certificate to keychain
+      #     security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+      #     security list-keychain -d user -s $KEYCHAIN_PATH
+          
+      #     # apply provisioning profile
+      #     mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+      #     cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+
+      - name: base64解码p12证书字符
+        id: certFileDecode
+        uses: timheuer/base64-to-file@v1.2.4
+        with:
+          fileName: 'certificate.p12'
+          encodedString: ${{ secrets.P12_BASE64 }}
+      - name: 拷贝证书
+        run: |
          mv ${{ steps.certFileDecode.outputs.filePath }} ~/Library/MobileDevice/Certificates/certificate.p12
          echo -e "\033[33m查看下目录内容\033[0m"
          ls -l ~/Library/MobileDevice/Certificates/
          
-     - name: base64解码mobileprovision字符
-       id: profFileDecode
-       uses: timheuer/base64-to-file@v1.2.4
-       with:
-        fileName: 'decoded.mobileprovision'
-        encodedString: ${{ secrets.MOBILEPROVISION_BASE64 }}
-     - name: 拷贝mobileprovision
-       run: |
-         mv ${{ steps.profFileDecode.outputs.filePath }} ~/Library/MobileDevice/Provisioning\ Profiles/decoded.mobileprovision
-         echo -e "\033[33m查看下目录内容\033[0m"
-         ls -l ~/Library/MobileDevice/Provisioning\ Profiles/
+      - name: base64解码mobileprovision字符
+        id: profFileDecode
+        uses: timheuer/base64-to-file@v1.2.4
+        with:
+          fileName: 'decoded.mobileprovision'
+          encodedString: ${{ secrets.MOBILEPROVISION_BASE64 }}
+      - name: 拷贝mobileprovision
+        run: |
+          mv ${{ steps.profFileDecode.outputs.filePath }} ~/Library/MobileDevice/Provisioning\ Profiles/decoded.mobileprovision
+          echo -e "\033[33m查看下目录内容\033[0m"
+          ls -l ~/Library/MobileDevice/Provisioning\ Profiles/
 
-     # - name: 安装必须的依赖
-     #   uses: actions/setup-python@v2
-     #   with:
-     #     python-version: 3.7
-     # - name: Install python dependencies
-     #   run:  python -m pip install codemagic-cli-tools
-     # - name: Initialize Keychain with certificate
-     #   run: |
-     #     keychain initialize
-     #     keychain add-certificates --certificate ~/Library/MobileDevice/Certificates/certificate.p12 --certificate-password ${{ secrets.p12_password }}
+      # - name: 安装必须的依赖
+      #   uses: actions/setup-python@v2
+      #   with:
+      #     python-version: 3.7
+      # - name: Install python dependencies
+      #   run:  python -m pip install codemagic-cli-tools
+        
+      - name: 安装证书
+        run: |
+          keychain initialize
+          keychain add-certificates --certificate ~/Library/MobileDevice/Certificates/certificate.p12 --certificate-password ${{ secrets.p12_password }}
     
-     - name: 配置Flutter环境
-       uses: subosito/flutter-action@v2.12.0
-       with:
-         flutter-version: '3.13.9'
+      - name: 配置Flutter环境
+        uses: subosito/flutter-action@v2.12.0
+        with:
+          flutter-version: '3.13.9'
 
-     - name: 查看相关环境版本
-       run: |
-         xcodebuild -version || echo "\033[31m环境中没有 xcode \033[0m"
-         echo -e "\033[33m xcode 版本查看完成\033[0m"
-         flutter --version || echo "\033[31m环境中没有 flutter \033[0m"
-         echo -e "\033[33m flutter 版本查看完成\033[0m"
-         dart --version || echo "\033[31m环境中没有 dart \033[0m"
-         echo -e "\033[33m dart 版本查看完成\033[0m"
+      - name: 查看相关环境版本
+        run: |
+          xcodebuild -version || echo "\033[31m环境中没有 xcode \033[0m"
+          echo -e "\033[33m xcode 版本查看完成\033[0m"
+          flutter --version || echo "\033[31m环境中没有 flutter \033[0m"
+          echo -e "\033[33m flutter 版本查看完成\033[0m"
+          dart --version || echo "\033[31m环境中没有 dart \033[0m"
+          echo -e "\033[33m dart 版本查看完成\033[0m"
        
-     - name: 清理环境和安装依赖
-       run: |
-         flutter clean 
-         flutter pub get
+      - name: 清理环境和安装依赖
+        run: |
+          flutter clean 
+          flutter pub get
      
-     - name: 编译生成ipa
-       run: |
-         # flutter gen-l10n
-         flutter build ipa --release --export-options-plist="ExportOptions.plist"
-         find ./ -type f -name *.ipa 
-         
-         # xcode-project use-profiles
-         # flutter build ios --release --no-codesign
-         # xcode-project build-ipa --workspace ios/Runner.xcworkspace --scheme Runner --config Release
+      - name: 编译生成ipa
+        run: |
+          # flutter gen-l10n
+          flutter build ipa --release --export-options-plist="ExportOptions.plist"
+          find ./ -type f -name *.ipa 
+      
          
      # - name: 上传ios包
      #   uses: actions/upload-artifact@v4.0.0
