@@ -78,7 +78,7 @@ jobs:
      
      - name: 编译生成ipa
        run: |
-         flutter gen-l10n
+         # flutter gen-l10n
          flutter build ipa --release --export-options-plist="ExportOptions.plist"
          find ./ -type f -name *.ipa 
          
