@@ -61,6 +61,12 @@ jobs:
        uses: subosito/flutter-action@v2.12.0
        # with:
        #   flutter-version: '1.12.13+hotfix.9'
+
+     - name: 查看相关环境版本
+       run: |
+         xcodebuild -version || echo "\033[31m环境中没有 xcode \033[0m"
+         flutter --version || echo "\033[31m环境中没有 flutter \033[0m"
+         dart --version || echo "\033[31m环境中没有 dart \033[0m"
        
      - name: 清理环境和安装依赖
        run: |
