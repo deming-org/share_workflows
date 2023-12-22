@@ -67,7 +67,7 @@ jobs:
        
       - name: 安装依赖
         run: |
-          # flutter clean 
+          # flutter clean
           flutter pub get
      
       - name: 编译生成ipa
@@ -76,11 +76,13 @@ jobs:
           flutter build ipa --release --export-options-plist="ExportOptions.plist"
           echo -e "\033[36m 查看编译产物目录\033[0m"
           ls ./build/ios/ipa/
+          echo -e "\033[33m 当前时间: $(date "+%F-%H-%M-%S")\033[0m"
+          # 命名格式 <项目代号>_<环境>_<大版本号>(Build <小版本号>)_<时间>.ipa
+          mv build/ios/ipa/*.ipa  build/ios/ipa/Hello\ world_dev_1.0.0(Build\ 1)_$(date "+%F-%H-%M-%S").ipa
       
-         
-     # - name: 上传ios包
-     #   uses: actions/upload-artifact@v4.0.0
-     #   with:
-     #    name: adhoc-ipa
-     #    # Path to the release files
-     #    path: build/ios/ipa/*.ipa
+      - name: 上传ios包
+        uses: actions/upload-artifact@v4.0.0
+        with:
+          name: adhoc-ipa
+          # Path to the release files
+          path: build/ios/ipa/*.ipa
