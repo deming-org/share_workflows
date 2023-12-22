@@ -22,71 +22,69 @@ jobs:
          echo -e "\033[33m验证一下\033[0m"
          ls -l ~/Library/MobileDevice/
 
-      # # 参考文档：https://docs.github.com/zh/actions/deployment/deploying-xcode-applications/installing-an-apple-certificate-on-macos-runners-for-xcode-development
-      # - name: 安装苹果证书和 provisioning profile
-      #   env:
-      #     BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
-      #     P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
-      #     BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
-      #     KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
-      #   run: |
-      #     # create variables
-      #     CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
-      #     PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
-      #     KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
-          
-      #     # import certificate and provisioning profile from secrets
-      #     echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
-      #     echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
-          
-      #     # create temporary keychain
-      #     security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-      #     security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
-      #     security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-          
-      #     # import certificate to keychain
-      #     security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
-      #     security list-keychain -d user -s $KEYCHAIN_PATH
-          
-      #     # apply provisioning profile
-      #     mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-      #     cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
-
-      - name: base64解码p12证书字符
-        id: certFileDecode
-        uses: timheuer/base64-to-file@v1.2.4
-        with:
-          fileName: 'certificate.p12'
-          encodedString: ${{ secrets.P12_BASE64 }}
-      - name: 拷贝证书
+      # 参考文档：https://docs.github.com/zh/actions/deployment/deploying-xcode-applications/installing-an-apple-certificate-on-macos-runners-for-xcode-development
+      - name: 安装苹果证书和 provisioning profile
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.P12_BASE64 }}
+          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.MOBILEPROVISION_BASE64 }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
         run: |
-         mv ${{ steps.certFileDecode.outputs.filePath }} ~/Library/MobileDevice/Certificates/certificate.p12
-         echo -e "\033[33m查看下目录内容\033[0m"
-         ls -l ~/Library/MobileDevice/Certificates/
-         
-      - name: base64解码mobileprovision字符
-        id: profFileDecode
-        uses: timheuer/base64-to-file@v1.2.4
-        with:
-          fileName: 'decoded.mobileprovision'
-          encodedString: ${{ secrets.MOBILEPROVISION_BASE64 }}
-      - name: 拷贝mobileprovision
+          # 创建变量
+          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          
+          # import certificate and provisioning profile from secrets
+          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
+          
+          # create temporary keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          
+          # import certificate to keychain
+          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
+          
+          # apply provisioning profile
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+          
+      - name: 查看证书配置目录
         run: |
-          mv ${{ steps.profFileDecode.outputs.filePath }} ~/Library/MobileDevice/Provisioning\ Profiles/decoded.mobileprovision
-          echo -e "\033[33m查看下目录内容\033[0m"
-          ls -l ~/Library/MobileDevice/Provisioning\ Profiles/
+          echo "\033[33m 查看 Provisioning\ Profiles 目录\033[0m"
+          ls -l ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "\033[33m 查看 Certificates 目录\033[0m"
+          ls -l ~/Library/MobileDevice/Certificates/
 
-      # - name: 安装必须的依赖
-      #   uses: actions/setup-python@v2
+      # - name: base64解码p12证书字符
+      #   id: certFileDecode
+      #   uses: timheuer/base64-to-file@v1.2.4
       #   with:
-      #     python-version: 3.7
-      # - name: Install python dependencies
-      #   run:  python -m pip install codemagic-cli-tools
-        
-      - name: 安装证书
-        run: |
-          keychain initialize
-          keychain add-certificates --certificate ~/Library/MobileDevice/Certificates/certificate.p12 --certificate-password ${{ secrets.p12_password }}
+      #     fileName: 'certificate.p12'
+      #     encodedString: ${{ secrets.P12_BASE64 }}
+      # - name: 拷贝证书
+      #   run: |
+      #    mv ${{ steps.certFileDecode.outputs.filePath }} ~/Library/MobileDevice/Certificates/certificate.p12
+      #    echo -e "\033[33m查看下目录内容\033[0m"
+      #    ls -l ~/Library/MobileDevice/Certificates/
+      # - name: base64解码mobileprovision字符
+      #   id: profFileDecode
+      #   uses: timheuer/base64-to-file@v1.2.4
+      #   with:
+      #     fileName: 'decoded.mobileprovision'
+      #     encodedString: ${{ secrets.MOBILEPROVISION_BASE64 }}
+      # - name: 拷贝mobileprovision
+      #   run: |
+      #     mv ${{ steps.profFileDecode.outputs.filePath }} ~/Library/MobileDevice/Provisioning\ Profiles/decoded.mobileprovision
+      #     echo -e "\033[33m查看下目录内容\033[0m"
+      #     ls -l ~/Library/MobileDevice/Provisioning\ Profiles/
+      # - name: 安装证书
+      #   run: |
+      #     keychain initialize
+      #     keychain add-certificates --certificate ~/Library/MobileDevice/Certificates/certificate.p12 --certificate-password ${{ secrets.p12_password }}
     
       - name: 配置Flutter环境
         uses: subosito/flutter-action@v2.12.0
