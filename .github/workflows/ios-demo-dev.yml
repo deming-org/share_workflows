@@ -100,9 +100,9 @@ jobs:
           dart --version || echo "\033[31m环境中没有 dart \033[0m"
           echo -e "\033[33m dart 版本查看完成\033[0m"
        
-      - name: 清理环境和安装依赖
+      - name: 安装依赖
         run: |
-          flutter clean 
+          # flutter clean 
           flutter pub get
      
       - name: 编译生成ipa
