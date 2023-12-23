@@ -1,4 +1,4 @@
-name: ios-demo-dev
+name: flutter-ios-demo-dev
 
 on: 
   workflow_dispatch:
@@ -89,5 +89,5 @@ jobs:
       - name: 上传ios包
         uses: actions/upload-artifact@v4.0.0
         with:
-          name: ios-demo-dev
+          name: flutter-ios-demo-dev
           path: build/ios/ipa/*.ipa
