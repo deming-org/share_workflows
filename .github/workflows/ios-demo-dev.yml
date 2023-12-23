@@ -1,0 +1,89 @@
+name: ios-demo-dev
+
+on: 
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: "编译作业"
+    runs-on: macos-latest
+    steps:
+      - name: 拉取仓库代码
+        uses: actions/checkout@v4.1.1
+        with: 
+          repository: "deming-org/ios-demo"
+          ref: "main"
+
+      # 参考文档：https://docs.github.com/zh/actions/deployment/deploying-xcode-applications/installing-an-apple-certificate-on-macos-runners-for-xcode-development
+      - name: 安装苹果证书和 provisioning profile
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.P12_BASE64 }}
+          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.MOBILEPROVISION_BASE64 }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}  #自定义，用于设置新密钥链的密码
+        run: |
+          # 创建变量
+          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          
+          # import certificate and provisioning profile from secrets
+          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
+          
+          # 创建临时密钥链
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          
+          # 导入证书和密钥链
+          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
+          
+          # apply provisioning profile
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+          
+      - name: 查看证书配置目录
+        run: |
+          echo -e "\033[33m 查看 Provisioning\ Profiles 目录\033[0m"
+          ls -l ~/Library/MobileDevice/Provisioning\ Profiles
+          echo -e "\033[33m 查看 keychain 存放目录\033[0m"
+          ls -l $RUNNER_TEMP/app-signing.keychain-db
+
+      - name: 查看相关环境版本
+        run: |
+          xcodebuild -version || echo "\033[31m环境中没有 xcode \033[0m"
+          echo -e "\033[33m xcode 版本查看完成\033[0m"
+          flutter --version || echo "\033[31m环境中没有 flutter \033[0m"
+          echo -e "\033[33m flutter 版本查看完成\033[0m"
+          dart --version || echo "\033[31m环境中没有 dart \033[0m"
+          echo -e "\033[33m dart 版本查看完成\033[0m"
+
+     
+      - name: 编译生成ipa
+        run: |
+          ls -l /usr/libexec/PlistBuddy
+          BUNDLE_VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "$infoPlist")
+          BUNDLE_BUILD_VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "$infoPlist")
+          echo -e "\033[33m BUNDLE_VERSION 为: $BUNDLE_VERSION \033[0m"
+          echo "\033[33m BUNDLE_BUILD_VERSION 为: $BUNDLE_BUILD_VERSION \033[0m"
+
+          SCHEME_NAME="Runner"
+          # archive 项目
+          xcodebuild archive -workspace Runner.xcworkspace -scheme $SCHEME_NAME -configuration Release -archivePath build/Runner.xcarchive
+          # 导出 .ipa 文件
+          xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath build/Hello.ipa
+
+          tree -a build
+          # echo -e "\033[36m 查看编译产物目录\033[0m"
+          # ls ./build/ios/ipa/
+          # echo -e "\033[33m 当前时间: $(date "+%F-%H-%M-%S")\033[0m"
+          # # 命名格式 <项目代号>_<环境>_<大版本号>(Build <小版本号>)_<时间>.ipa
+          # mv build/ios/ipa/*.ipa  build/ios/ipa/Hello\ world_dev_1.0.0\(Build\ 1\)_$(date "+%F-%H-%M-%S").ipa
+      
+      # - name: 上传ios包
+      #   uses: actions/upload-artifact@v4.0.0
+      #   with:
+      #     name: flutter-ios-demo-dev
+      #     path: build/ios/ipa/*.ipa
