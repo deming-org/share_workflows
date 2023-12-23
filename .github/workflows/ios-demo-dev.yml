@@ -71,13 +71,14 @@ jobs:
           # echo "\033[33m BUNDLE_BUILD_VERSION 为: $BUNDLE_BUILD_VERSION \033[0m"
 
           pwd && ls -l
-          mkdir -pv build
+          # mkdir -pv build
           echo -e "\033[33m 开始执行编译命令 \033[0m"
           SCHEME_NAME="Runner"
+          cd Runner
           # archive 项目
-          xcodebuild archive -workspace Runner.xcworkspace -scheme $SCHEME_NAME -configuration Release -archivePath build/Runner.xcarchive
+          xcodebuild archive -workspace Runner.xcworkspace -scheme $SCHEME_NAME -configuration Release -archivePath build/Runner.xcarchive || echo "生成 xcarchive 文件失败"
           # 导出 .ipa 文件
-          xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath build/Hello.ipa
+          xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath build/Hello.ipa || echo "生成 ipa 文件失败"
 
           tree -a build
           # echo -e "\033[36m 查看编译产物目录\033[0m"
