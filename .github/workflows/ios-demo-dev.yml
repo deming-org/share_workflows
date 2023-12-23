@@ -63,11 +63,12 @@ jobs:
      
       - name: 编译生成ipa
         run: |
-          ls -l /usr/libexec/PlistBuddy
-          BUNDLE_VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "$infoPlist")
-          BUNDLE_BUILD_VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "$infoPlist")
-          echo -e "\033[33m BUNDLE_VERSION 为: $BUNDLE_VERSION \033[0m"
-          echo "\033[33m BUNDLE_BUILD_VERSION 为: $BUNDLE_BUILD_VERSION \033[0m"
+          # ls -l /usr/libexec/PlistBuddy
+          # INFO_PLIST_PATH=''
+          # BUNDLE_VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "$INFO_PLIST_PATH")
+          # BUNDLE_BUILD_VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "$INFO_PLIST_PATH")
+          # echo -e "\033[33m BUNDLE_VERSION 为: $BUNDLE_VERSION \033[0m"
+          # echo "\033[33m BUNDLE_BUILD_VERSION 为: $BUNDLE_BUILD_VERSION \033[0m"
 
           SCHEME_NAME="Runner"
           # archive 项目
@@ -80,7 +81,7 @@ jobs:
           # ls ./build/ios/ipa/
           # echo -e "\033[33m 当前时间: $(date "+%F-%H-%M-%S")\033[0m"
           # # 命名格式 <项目代号>_<环境>_<大版本号>(Build <小版本号>)_<时间>.ipa
-          # mv build/ios/ipa/*.ipa  build/ios/ipa/Hello\ world_dev_1.0.0\(Build\ 1\)_$(date "+%F-%H-%M-%S").ipa
+          # mv build/ios/ipa/*.ipa  build/ios/ipa/ios-demo_dev_1.0.0\(Build\ 1\)_$(date "+%F-%H-%M-%S").ipa
       
       # - name: 上传ios包
       #   uses: actions/upload-artifact@v4.0.0
