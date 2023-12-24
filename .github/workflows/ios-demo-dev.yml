@@ -89,8 +89,9 @@ jobs:
         run: |
           # 下载fir-cli
           # wget https://github.com/PGYER/go-fir-cli/releases/download/0.0.9/go-fir-cli-0.0.9-linux-amd64.tar.gz
-          wget https://github.com/PGYER/go-fir-cli/releases/download/0.0.9/go-fir-cli-0.0.9-linux-arm64.tar.gz
-          tar -zxvf go-fir-cli-0.0.9-linux-arm64.tar.gz
+          wget https://github.com/PGYER/go-fir-cli/releases/download/0.0.9/go-fir-cli-0.0.9-darwin-amd64.tar.gz
+          tar -zxvf go-fir-cli-0.0.9-darwin-amd64.tar.gz
+          chmod +x ./go-fir-cli
           ls -l 
           ./go-fir-cli -h
 
