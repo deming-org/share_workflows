@@ -92,8 +92,6 @@ jobs:
           tar -zxvf go-fir-cli-0.0.9-darwin-amd64.tar.gz
           chmod +x go-fir-cli
           ls -l 
-          ./go-fir-cli -h
-
-          # 上传
+          echo "上传ipa到分发平台fir"
           ./go-fir-cli --token ${{ secrets.FIR_TOKEN }}  upload -f build/Hello.ipa/Runner.ipa --larkToken ${{ secrets.FEISHU_ROBOT_ID }} --larkCustomMsg "flutter-ios-demo-dev打包完成" --sui  -c "我是更新日志，随便写点"
-
+          echo "上传结束"
