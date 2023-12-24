@@ -79,14 +79,27 @@ jobs:
           xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath build/Hello.ipa || echo "生成 ipa 文件失败"
 
           find ./ -type f -name *.ipa
-          # echo -e "\033[36m 查看编译产物目录\033[0m"
-          # ls ./build/ios/ipa/
+          echo -e "\033[36m 查看编译产物目录\033[0m"
+          tree -a build
           # echo -e "\033[33m 当前时间: $(date "+%F-%H-%M-%S")\033[0m"
           # # 命名格式 <项目代号>_<环境>_<大版本号>(Build <小版本号>)_<时间>.ipa
           # mv build/ios/ipa/*.ipa  build/ios/ipa/ios-demo_dev_1.0.0\(Build\ 1\)_$(date "+%F-%H-%M-%S").ipa
       
-      # - name: 上传ios包
-      #   uses: actions/upload-artifact@v4.0.0
-      #   with:
-      #     name: flutter-ios-demo-dev
-      #     path: build/ios/ipa/*.ipa
+      - name: 上传ios包
+        run: |
+          # 下载fir-cli
+          wget https://github.com/PGYER/go-fir-cli/releases/download/0.0.9/go-fir-cli-0.0.9-linux-amd64.tar.gz
+          tar -zxvf go-fir-cli-0.0.9-linux-amd64.tar.gz
+          chmod +x go-fir-cli
+
+          # 上传
+          ./go-fir-cli --token ${{ secrets.FIR_TOKEN }} \
+            upload \
+            -f build/Hello.ipa/Runner.ipa  \
+            --larkToken ${{ secrets.FEISHU_ROBOT_ID }} \
+            --larkCustomMsg "flutter-ios-demo-dev打包完成" \
+            --sui \
+            -c "我是更新日志，随便写点"
+
+          # 查看当前目录
+          pwd && ls -l
