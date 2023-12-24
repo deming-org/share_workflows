@@ -93,5 +93,6 @@ jobs:
           chmod +x go-fir-cli
           ls -l 
           echo "上传ipa到分发平台fir"
-          ./go-fir-cli --token ${{ secrets.FIR_TOKEN }}  upload -f build/Hello.ipa/Runner.ipa --larkToken ${{ secrets.FEISHU_ROBOT_ID }} --larkCustomMsg "flutter-ios-demo-dev打包完成" --sui  -c "我是更新日志，随便写点"
+          ./go-fir-cli -t "${{ secrets.FIR_TOKEN }}"  upload -f build/Hello.ipa/Runner.ipa --lt "${{ secrets.FEISHU_ROBOT_ID }}" --lcm "flutter-ios-demo-dev打包完成" --sui  -c "我是更新日志，随便写点"      
+          # ./go-fir-cli -t "${{ secrets.FIR_TOKEN }}"  upload -f build/Hello.ipa/Runner.ipa --lt "${{ secrets.FEISHU_ROBOT_ID }}" --lcm "flutter-ios-demo-dev打包完成" -c "我是更新日志1，随便写点"
           echo "上传结束"
