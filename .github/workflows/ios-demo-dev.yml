@@ -92,6 +92,7 @@ jobs:
           ls -l 
           tar -zxvf go-fir-cli-0.0.9-linux-amd64.tar.gz
           chmod +x go-fir-cli
+          ./go-fir-cli -h
 
           # # 上传
           # ./go-fir-cli --token ${{ secrets.FIR_TOKEN }} \
