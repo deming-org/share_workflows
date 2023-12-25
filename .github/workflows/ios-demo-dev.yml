@@ -84,7 +84,7 @@ jobs:
           xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath build/ipa || echo "生成 ipa 文件失败"
 
           WF_IPA_FILENAME="${{ github.WORKFLOW }}_1.0.0-build-1_$(date '+%F-%H-%M-%S').ipa"
-          echo "MY_VARIABLE_NAME=${WF_IPA_FILENAME}" >> $GITHUB_ENV
+          echo "MY_VARIABLE_NAME=${WF_IPA_FILENAME}" >> "$GITHUB_ENV"
           # ipa 文件命名格式：<应用名>_<大版本号-build-小版本号>_<时间>.ipa
           mv build/ipa/*.ipa  ${WF_IPA_FILENAME}
           echo -e "\033[33m 查看编译产物: ${WF_IPA_FILENAME} 和其他文件 \033[0m"
