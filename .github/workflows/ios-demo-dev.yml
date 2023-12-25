@@ -99,7 +99,7 @@ jobs:
       - name: 上传到nexus
         run: |
           echo -e "\033[36m ipa文件名: ${WF_IPA_FILENAME} \033[0m"
-          curl -v -u ${{ secrets.NEXUS_USER }}:${{ secrets.NEXUS_PWD }} -X POST '${{ secrets.NEXUS_SERVER }}service/rest/v1/components?repository=ios-demo' -F raw.asset1=@./${WF_IPA_FILENAME}  -F raw.directory=${{ github.WORKFLOW }}-F raw.asset1.filename=${WF_IPA_FILENAME}  
+          curl -v -u "${{ secrets.NEXUS_USER }}":"${{ secrets.NEXUS_PWD }}" -X POST "${{ secrets.NEXUS_SERVER }}service/rest/v1/components?repository=ios-demo" -F raw.asset1=@./${WF_IPA_FILENAME}  -F raw.directory="${{ github.WORKFLOW }}" -F raw.asset1.filename="${WF_IPA_FILENAME}"  
           
       # - name: 上传到fir.im
       #   run: |
