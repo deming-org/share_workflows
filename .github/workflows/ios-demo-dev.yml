@@ -91,7 +91,7 @@ jobs:
           name: ${{ github.WORKFLOW }}
           path: "*.ipa"
           
-      - name: 上传ios包
+      - name: 上传到fir.im
         run: |
           # 下载fir-cli
           wget https://github.com/PGYER/go-fir-cli/releases/download/0.0.9/go-fir-cli-0.0.9-darwin-amd64.tar.gz
