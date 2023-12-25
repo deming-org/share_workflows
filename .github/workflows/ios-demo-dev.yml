@@ -51,16 +51,18 @@ jobs:
           echo -e "\033[33m 查看 keychain 存放目录\033[0m"
           ls -l $RUNNER_TEMP/app-signing.keychain-db
 
-      - name: 查看相关环境版本
-        run: |
-          xcodebuild -version || echo "\033[31m环境中没有 xcode \033[0m"
-          echo -e "\033[33m xcode 版本查看完成\033[0m"
-          flutter --version || echo "\033[31m环境中没有 flutter \033[0m"
-          echo -e "\033[33m flutter 版本查看完成\033[0m"
-          dart --version || echo "\033[31m环境中没有 dart \033[0m"
-          echo -e "\033[33m dart 版本查看完成\033[0m"
-
-     
+      # - name: 查看相关环境版本
+      #   run: |
+      #     xcodebuild -version || echo "\033[31m环境中没有 xcode \033[0m"
+      #     echo -e "\033[33m xcode 版本查看完成\033[0m"
+      #     flutter --version || echo "\033[31m环境中没有 flutter \033[0m"
+      #     echo -e "\033[33m flutter 版本查看完成\033[0m"
+      #     dart --version || echo "\033[31m环境中没有 dart \033[0m"
+      #     echo -e "\033[33m dart 版本查看完成\033[0m"
+      
+      - name: 依赖安装
+        run: pod install --no-repo-update
+        
       - name: 编译生成ipa
         run: |
           # ls -l /usr/libexec/PlistBuddy
@@ -76,23 +78,26 @@ jobs:
           # archive 项目
           xcodebuild archive -workspace Runner/Runner.xcworkspace -scheme $SCHEME_NAME -configuration Release -archivePath build/Runner.xcarchive || echo "生成 xcarchive 文件失败"
           # 导出 .ipa 文件
-          xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath build/Hello.ipa || echo "生成 ipa 文件失败"
+          xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath build/ipa || echo "生成 ipa 文件失败"
 
-          find ./ -type f -name *.ipa
-          echo -e "\033[36m 查看编译产物目录\033[0m"
-          ls -al build/*
-          # echo -e "\033[33m 当前时间: $(date "+%F-%H-%M-%S")\033[0m"
-          # # 命名格式 <项目代号>_<环境>_<大版本号>(Build <小版本号>)_<时间>.ipa
-          # mv build/ios/ipa/*.ipa  build/ios/ipa/ios-demo_dev_1.0.0\(Build\ 1\)_$(date "+%F-%H-%M-%S").ipa
-      
+          # ipa 文件命名格式：<应用名>_<大版本号>(Build <小版本号>)_<时间>.ipa
+          mv build/ipa/*.ipa  ${{ github.WORKFLOW }}_1.0.0\(Build\ 1\)_$(date "+%F-%H-%M-%S").ipa
+          echo -e "\033[33m 查看编译产物 \033[0m"
+          ls *.ipa build/*
+          
+      - name: 上传
+        uses: actions/upload-artifact@v4.0.0
+        with:
+          name: ${{ github.WORKFLOW }}
+          path: "*.ipa"
+          
       - name: 上传ios包
         run: |
           # 下载fir-cli
           wget https://github.com/PGYER/go-fir-cli/releases/download/0.0.9/go-fir-cli-0.0.9-darwin-amd64.tar.gz
           tar -zxvf go-fir-cli-0.0.9-darwin-amd64.tar.gz
           chmod +x go-fir-cli
+          ./go-fir-cli -t "${{ secrets.FIR_TOKEN }}"  upload -f *.ipa --lt "${{ secrets.FEISHU_ROBOT_ID }}" --lcm "${{ github.WORKFLOW }}打包完成" --sui  -c "我是更新日志，随便写点"
+ 
           ls -l 
-          echo "上传ipa到分发平台fir"
-          ./go-fir-cli -t "${{ secrets.FIR_TOKEN }}"  upload -f build/Hello.ipa/Runner.ipa --lt "${{ secrets.FEISHU_ROBOT_ID }}" --lcm "flutter-ios-demo-dev打包完成" --sui  -c "我是更新日志，随便写点"      
-          # ./go-fir-cli -t "${{ secrets.FIR_TOKEN }}"  upload -f build/Hello.ipa/Runner.ipa --lt "${{ secrets.FEISHU_ROBOT_ID }}" --lcm "flutter-ios-demo-dev打包完成" -c "我是更新日志1，随便写点"
-          echo "上传结束"
+
