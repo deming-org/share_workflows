@@ -61,7 +61,10 @@ jobs:
       #     echo -e "\033[33m dart 版本查看完成\033[0m"
       
       - name: 依赖安装
-        run: pod install --no-repo-update || echo "没有依赖需要安装"
+        run: |
+          ruby -v || echo "ruby 版本查看命令不正确或者未安装"
+          pod --version || echo "Cocoapods  版本查看命令不正确或者未安装"
+          pod install --no-repo-update || echo "没有依赖需要安装"
         
       - name: 编译生成ipa
         run: |
