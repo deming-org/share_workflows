@@ -47,7 +47,7 @@ jobs:
 
       # 参考文档：https://docs.github.com/zh/actions/deployment/deploying-xcode-applications/installing-an-apple-certificate-on-macos-runners-for-xcode-development
       - name: 安装苹果证书和 provisioning profile
-        uses: ./actions_temp/.github/actions/action-install-apple-cert/action.yml
+        uses: ./actions_temp/.github/actions/action-install-apple-cert
         with:
           build_certificate_base64: "${{ secrets.P12_BASE64 }}"
           p12_password: "${{ secrets.P12_PASSWORD }}"
@@ -96,7 +96,7 @@ jobs:
 
       - name: 通知
         if: ${{ !cancelled() }}
-        uses: ./actions_temp/.github/actions/action-notification/action.yml
+        uses: ./actions_temp/.github/actions/action-notification
         with:
           send_addr: ${{ secrets.FS_ROBOT }}
           content: "Artifact 下载地址：https://api.github.com/repos/${{ GITHUB.REPOSITORY }}/actions/artifacts/${{ steps.artifact-upload-step.outputs.artifact-id }}\\n\\nNexus 下载地址：${{ secrets.NEXUS_SERVER }}repository/ios-demo/${{ github.WORKFLOW }}/${ipa_filename}"
