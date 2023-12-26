@@ -28,6 +28,9 @@ jobs:
         uses: actions/checkout@v4.1.1
         with:
           path: 'actions_temp'
+
+      - name: 验证
+        run: ls -alt actions_temp/ && ls -alt actions_temp/*
         
       - name: 拉代码
         uses: ./actions_temp/.github/actions/action-checkout
