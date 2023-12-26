@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
 
 env:
-  type: "native"
-  # type: "flutter"
+  # type: "native"
+  type: "flutter"
   
 jobs:
   build:
@@ -15,8 +15,8 @@ jobs:
       - name: 拉取仓库代码
         uses: actions/checkout@v4.1.1
         with: 
-          repository: "deming-org/ios-demo"
-          # repository: "deming-org/flutter-ios-demo"
+          # repository: "deming-org/ios-demo"
+          repository: "deming-org/flutter-ios-demo"
           ref: "main"
 
       # 参考文档：https://docs.github.com/zh/actions/deployment/deploying-xcode-applications/installing-an-apple-certificate-on-macos-runners-for-xcode-development
