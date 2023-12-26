@@ -10,8 +10,8 @@ on:
         type: string
 
 env:
-  type: "native"
-  # type: "flutter"
+  # type: "native"
+  type: "flutter"
   
 jobs:
   build:
@@ -31,8 +31,8 @@ jobs:
         with:
           # 参数通过创建模板的api，动态生成
           repo_type: 'github'
-          repository: "deming-org/ios-demo"
-          # repository: "deming-org/flutter-ios-demo"
+          # repository: "deming-org/ios-demo"
+          repository: "deming-org/flutter-ios-demo"
           ref: ${{ inputs.ref }}
           password: ${{ secrets.GH_TOKEN }}
 
