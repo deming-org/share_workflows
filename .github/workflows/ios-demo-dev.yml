@@ -83,23 +83,22 @@ jobs:
           # 导出 .ipa 文件
           xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath build/ipa || echo "生成 ipa 文件失败"
 
-          WF_IPA_FILENAME="${{ github.WORKFLOW }}_1.0.0-build-1_$(date '+%F-%H-%M-%S').ipa"
-          echo "MY_VARIABLE_NAME=${WF_IPA_FILENAME}" >> "$GITHUB_ENV"
+          echo "ipa_filename=${{ github.WORKFLOW }}_1.0.0-build-1_$(date '+%F-%H-%M-%S').ipa" >> "$GITHUB_ENV"
           # ipa 文件命名格式：<应用名>_<大版本号-build-小版本号>_<时间>.ipa
-          mv build/ipa/*.ipa  ${WF_IPA_FILENAME}
-          echo -e "\033[33m 查看编译产物: ${WF_IPA_FILENAME} 和其他文件 \033[0m"
-          ls ${WF_IPA_FILENAME} build/*
+          mv build/ipa/*.ipa  ${ipa_filename}
+          echo -e "\033[33m 查看编译产物: ${ipa_filename} 和其他文件 \033[0m"
+          ls ${ipa_filename} build/*
           
       - name: 上传到Artifact
         uses: actions/upload-artifact@v4.0.0
         with:
           name: ${{ github.WORKFLOW }}
-          path: "${WF_IPA_FILENAME}"
+          path: "$ipa_filename"
           
       - name: 上传到nexus
         run: |
-          echo -e "\033[36m ipa文件名: ${WF_IPA_FILENAME} \033[0m"
-          curl -v -u "${{ secrets.NEXUS_USER }}":"${{ secrets.NEXUS_PWD }}" -X POST "${{ secrets.NEXUS_SERVER }}service/rest/v1/components?repository=ios-demo" -F raw.asset1=@./${WF_IPA_FILENAME}  -F raw.directory="${{ github.WORKFLOW }}" -F raw.asset1.filename="${WF_IPA_FILENAME}"  
+          echo -e "\033[36m ipa文件名: ${ipa_filename} \033[0m"
+          curl -v -u "${{ secrets.NEXUS_USER }}":"${{ secrets.NEXUS_PWD }}" -X POST "${{ secrets.NEXUS_SERVER }}service/rest/v1/components?repository=ios-demo" -F raw.asset1=@./${ipa_filename}  -F raw.directory="${{ github.WORKFLOW }}" -F raw.asset1.filename="${ipa_filename}"  
           
       # - name: 上传到fir.im
       #   run: |
@@ -107,12 +106,12 @@ jobs:
       #     wget https://github.com/PGYER/go-fir-cli/releases/download/0.0.9/go-fir-cli-0.0.9-darwin-amd64.tar.gz
       #     tar -zxvf go-fir-cli-0.0.9-darwin-amd64.tar.gz
       #     chmod +x go-fir-cli
-      #     ./go-fir-cli -t "${{ secrets.FIR_TOKEN }}"  upload -f ${WF_IPA_FILENAME} --lt "${{ secrets.FEISHU_ROBOT_ID }}" --lcm "${{ github.WORKFLOW }}打包完成" --sui  -c "我是更新日志，随便写点"
+      #     ./go-fir-cli -t "${{ secrets.FIR_TOKEN }}"  upload -f ${ipa_filename} --lt "${{ secrets.FEISHU_ROBOT_ID }}" --lcm "${{ github.WORKFLOW }}打包完成" --sui  -c "我是更新日志，随便写点"
  
       #     ls -l 
 
       - name: 通知
         run: |
           echo "我是 Artifact 下载地址：https://api.github.com/repos/${{ GITHUB.REPOSITORY }}/actions/artifacts/${{ steps.artifact-upload-step.outputs.artifact-id }}"
-          echo "我是 Nexus 下载地址：${{ secrets.NEXUS_SERVER }}repository/ios-demo/${{ github.WORKFLOW }}/${WF_IPA_FILENAME}"
+          echo "我是 Nexus 下载地址：${{ secrets.NEXUS_SERVER }}repository/ios-demo/${{ github.WORKFLOW }}/${ipa_filename}"
 
