@@ -30,6 +30,7 @@ jobs:
           echo "ipa_filename: $ipa_filename"
           echo "wf_ipa_filename: $wf_ipa_filename"
           echo "WF_IPA_FILENAME3: ${WF_IPA_FILENAME3}"
+          echo "WF_IPA_FILENAME: ${WF_IPA_FILENAME}"
           
   # test2:
   #   name: 测试验证2
