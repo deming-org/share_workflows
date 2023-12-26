@@ -4,7 +4,8 @@ on:
   workflow_dispatch:
 
 env:
-  type: "flutter"
+  type: ""
+  # type: "flutter"
   
 jobs:
   build:
