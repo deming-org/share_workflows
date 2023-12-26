@@ -95,7 +95,7 @@ jobs:
         uses: actions/upload-artifact@v4.0.0
         with:
           name: ${{ github.WORKFLOW }}
-          path: "$ipa_filename"
+          path: "${{ env.ipa_filename }}"
           
       - name: 上传到nexus
         run: |
