@@ -3,6 +3,9 @@ name: ios-demo-dev
 on: 
   workflow_dispatch:
 
+env:
+  type: "flutter"
+  
 jobs:
   build:
     name: "编译作业"
@@ -44,12 +47,12 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
           
-      - name: 查看证书配置目录
-        run: |
-          echo -e "\033[33m 查看 Provisioning\ Profiles 目录\033[0m"
-          ls -l ~/Library/MobileDevice/Provisioning\ Profiles
-          echo -e "\033[33m 查看 keychain 存放目录\033[0m"
-          ls -l $RUNNER_TEMP/app-signing.keychain-db
+      # - name: 查看证书配置目录
+      #   run: |
+      #     echo -e "\033[33m 查看 Provisioning\ Profiles 目录\033[0m"
+      #     ls -l ~/Library/MobileDevice/Provisioning\ Profiles
+      #     echo -e "\033[33m 查看 keychain 存放目录\033[0m"
+      #     ls -l $RUNNER_TEMP/app-signing.keychain-db
 
       # - name: 查看相关环境版本
       #   run: |
@@ -57,23 +60,47 @@ jobs:
       #     echo -e "\033[33m xcode 版本查看完成\033[0m"
       #     flutter --version || echo "\033[31m环境中没有 flutter \033[0m"
       #     echo -e "\033[33m flutter 版本查看完成\033[0m"
-      #     dart --version || echo "\033[31m环境中没有 dart \033[0m"
-      #     echo -e "\033[33m dart 版本查看完成\033[0m"
+      #     ruby -v || echo "ruby 版本查看命令不正确或者未安装"
+      #     echo -e "\033[33m ruby 版本查看完成\033[0m" 
+      #     pod --version || echo "Cocoapods  版本查看命令不正确或者未安装"
+      #     echo -e "\033[33m CocoaPods 版本查看完成\033[0m"
+    
+      - name: 配置Flutter环境
+        if: ${{ env.type == "flutter" }}
+        uses: subosito/flutter-action@v2.12.0
+        with:
+          flutter-version: '3.13.9'
       
       - name: 依赖安装
         run: |
-          ruby -v || echo "ruby 版本查看命令不正确或者未安装"
-          pod --version || echo "Cocoapods  版本查看命令不正确或者未安装"
-          pod install --no-repo-update || echo "没有依赖需要安装"
-        
+          native_install_cmd="pod install --no-repo-update || echo '没有依赖需要安装'"
+          flutter_install_cmd="flutter pub get"
+          if [ "$type" = "flutter" ]; then
+            echo $flutter_install_cmd | bash 
+            exit 0
+          fi
+          echo $native_install_cmd | bash
+
+      - name: 配置环境变量
+        run: |
+          ls -l /usr/libexec/PlistBuddy || echo -e "\033[33m PlistBuddy解析plist文件工具不存在\033[0m"
+          if [ "$type" = "flutter" ]; then
+            INFO_PLIST_PATH='ios/Runner/Info.plist'
+          else
+            INFO_PLIST_PATH='Runner/Runner/Info.plist'
+          fi
+          
+          BUNDLE_VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "$INFO_PLIST_PATH")
+          BUNDLE_BUILD_VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "$INFO_PLIST_PATH")
+          echo -e "\033[33m BUNDLE_VERSION 为: $BUNDLE_VERSION \033[0m"
+          echo "\033[33m BUNDLE_BUILD_VERSION 为: $BUNDLE_BUILD_VERSION \033[0m"
+          
+          ipa_filename="${{ github.WORKFLOW }}_${BUNDLE_VERSION}-build-${BUNDLE_BUILD_VERSION}_$(date '+%F-%H-%M-%S').ipa"
+          echo "ipa_filename=$ipa_filename" >> "$GITHUB_ENV"
+          echo -e "\033[33m 查看设置的环境变量：ipa_filename => $ipa_filename\033[0m"
+          
       - name: 编译生成ipa
         run: |
-          # ls -l /usr/libexec/PlistBuddy
-          # INFO_PLIST_PATH=''
-          # BUNDLE_VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "$INFO_PLIST_PATH")
-          # BUNDLE_BUILD_VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "$INFO_PLIST_PATH")
-          # echo -e "\033[33m BUNDLE_VERSION 为: $BUNDLE_VERSION \033[0m"
-          # echo "\033[33m BUNDLE_BUILD_VERSION 为: $BUNDLE_BUILD_VERSION \033[0m"
           pwd && ls -l
 
           echo -e "\033[33m 开始执行编译命令 \033[0m"
@@ -83,9 +110,6 @@ jobs:
           # 导出 .ipa 文件
           xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath build/ipa || echo "生成 ipa 文件失败"
 
-          ipa_filename="${{ github.WORKFLOW }}_1.0.0-build-1_$(date '+%F-%H-%M-%S').ipa"
-          echo "ipa_filename=$ipa_filename" >> "$GITHUB_ENV"
-          echo -e "\033[33m 查看设置的环境变量：ipa_filename => $ipa_filename\033[0m"
           # ipa 文件命名格式：<应用名>_<大版本号-build-小版本号>_<时间>.ipa
           mv -f build/ipa/*.ipa  ${ipa_filename}
           echo -e "\033[33m 查看编译产物: ${ipa_filename} 和其他文件 \033[0m"
@@ -109,7 +133,6 @@ jobs:
       #     tar -zxvf go-fir-cli-0.0.9-darwin-amd64.tar.gz
       #     chmod +x go-fir-cli
       #     ./go-fir-cli -t "${{ secrets.FIR_TOKEN }}"  upload -f ${ipa_filename} --lt "${{ secrets.FEISHU_ROBOT_ID }}" --lcm "${{ github.WORKFLOW }}打包完成" --sui  -c "我是更新日志，随便写点"
- 
       #     ls -l 
 
       - name: 通知
