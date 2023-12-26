@@ -21,8 +21,15 @@ jobs:
           echo "WF_IPA_FILENAME3=${WF_IPA_FILENAME3}" >> "$GITHUB_ENV"
 
           # GITHUB_、RUNNER_、CI_、WF_ 开头的变量不一定会生效
-          WF_IPA_FILENAME="c${{ github.WORKFLOW }}_1.0.0-build-1_$(date '+%F-%H-%M-%S').ipa"
-          echo "MY_VARIABLE_NAME=${WF_IPA_FILENAME}" >> "$GITHUB_ENV"
+          WF_IPA_FILENAME="${{ github.WORKFLOW }}_1.0.0-build-1_$(date '+%F-%H-%M-%S').ipa"
+          echo -e "设置后马上查看下：WF_IPA_FILENAME => $WF_IPA_FILENAME "
+          echo "WF_IPA_FILENAME=${WF_IPA_FILENAME}" >> "$GITHUB_ENV"
+          echo -e "设置环境变量后再查看下：WF_IPA_FILENAME => $WF_IPA_FILENAME "
+
+          echo "WF_IPA_FILENAME=22.ipa" >> "$GITHUB_ENV"
+          echo -e "设置后马上查看下：WF_IPA_FILENAME => $WF_IPA_FILENAME "
+          echo "MY_VAR1=${WF_IPA_FILENAME}" >> "$GITHUB_ENV"
+          echo -e "设置后马上查看下：MY_VAR1 => $MY_VAR1 "
           
           echo -e "GITHUB_WORKFLOW: $GITHUB_WORKFLOW \t GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
           
@@ -32,6 +39,7 @@ jobs:
           echo "wf_ipa_filename: $wf_ipa_filename"
           echo "WF_IPA_FILENAME3: ${WF_IPA_FILENAME3}"
           echo "WF_IPA_FILENAME: ${WF_IPA_FILENAME}"
+          echo "MY_VAR1: ${MY_VAR1}"
           
   # test2:
   #   name: 测试验证2
