@@ -66,7 +66,7 @@ jobs:
       #     echo -e "\033[33m CocoaPods 版本查看完成\033[0m"
     
       - name: 配置Flutter环境
-        if: ${{ env.type == "flutter" }}
+        # if: ${{ inputs.type == "flutter" }}
         uses: subosito/flutter-action@v2.12.0
         with:
           flutter-version: '3.13.9'
