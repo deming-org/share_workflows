@@ -11,21 +11,23 @@ jobs:
       - name: 打印变量
         run: |
           pwd
-          ipa_filename="123a"
-          echo "ipa_filename2=${ipa_filename}" >> "$GITHUB_ENV"
-          echo "ipa_filename=$ipa_filename" >> "$GITHUB_ENV"
-          echo "wf_ipa_filename=abcd" >> "$GITHUB_ENV"
-          # ipa_filename="${{ github.WORKFLOW }}_1.0.0-build-1_$(date '+%F-%H-%M-%S').ipa"
-          # wf_ipa_filename="ci_cd2_1.0.0-build-1_$(date '+%F-%H-%M-%S').ipa"
-          # WF_IPA_FILENAME3="ci_cd2_1.0.0-build-1_`date '+%F-%H-%M-%S'`.ipa"
+          ipa_filename="${{ github.WORKFLOW }}_1.0.0-build-1_$(date '+%F-%H-%M-%S').ipa"
+          echo "ipa_filename=${ipa_filename}" >> "$GITHUB_ENV"
+          
+          wf_ipa_filename="ci_cd2_1.0.0-build-1_$(date '+%F-%H-%M-%S').ipa"
+          echo "wf_ipa_filename=${wf_ipa_filename}" >> "$GITHUB_ENV"
+          
+          WF_IPA_FILENAME3="ci_cd2_1.0.0-build-1_`date '+%F-%H-%M-%S'`.ipa"
+          echo "WF_IPA_FILENAME3=${WF_IPA_FILENAME3}" >> "$GITHUB_ENV"
+          
           # WF_IPA_FILENAME4="ci_cd2_1.0.0-build-1_`date '+%F-%H-%M-%S'`.ipa"
           # echo "MY_VARIABLE_NAME=${WF_IPA_FILENAME}" >> "$GITHUB_ENV"
           echo -e "GITHUB_WORKFLOW: $GITHUB_WORKFLOW \t GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
       - name: 输出作业内共享变量
         run: |
           echo "ipa_filename: $ipa_filename"
-          echo "ipa_filename2: $ipa_filename2"
-          echo "wf_ipa_filename: ${wf_ipa_filename}"
+          echo "wf_ipa_filename: $wf_ipa_filename"
+          echo "WF_IPA_FILENAME3: ${WF_IPA_FILENAME3}"
           
   # test2:
   #   name: 测试验证2
