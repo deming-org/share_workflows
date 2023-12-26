@@ -11,7 +11,14 @@ jobs:
       - name: 打印变量
         run: |
           pwd
+          WF_IPA_FILENAME="${{ github.WORKFLOW }}_1.0.0-build-1_$(date '+%F-%H-%M-%S').ipa"
+          echo "MY_VARIABLE_NAME=${WF_IPA_FILENAME}" >> "$GITHUB_ENV"
           echo -e "GITHUB_WORKFLOW: $GITHUB_WORKFLOW \t GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
+      - name: 输出作业内共享变量
+        run: |
+          echo "WF_IPA_FILENAME1: $WF_IPA_FILENAME"
+          echo "WF_IPA_FILENAME2: ${WF_IPA_FILENAME}"
+          
   # test2:
   #   name: 测试验证2
   #   # needs:
