@@ -20,6 +20,9 @@ jobs:
     steps:
       - name: 创建action存放目录
         run: mkdir -v actions_temp
+
+      - name: 验证
+        run: pwd && ls -alt actions_temp/*
         
       - name: 拉取自定义的action
         uses: actions/checkout@v4.1.1
