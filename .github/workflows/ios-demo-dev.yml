@@ -1,0 +1,93 @@
+name: ios-demo-dev
+
+on: 
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: '分支或标签(正式使用的时候不要给默认值)'
+        default: 'main'
+        required: true
+        type: string
+
+env:
+  type: "native"
+  # type: "flutter"
+  
+jobs:
+  build:
+    name: "编译作业"
+    runs-on: macos-latest
+    steps:
+      - name: 创建action存放目录
+        run: mkdir -v actions_temp
+        
+      - name: 拉取自定义的action
+        uses: actions/checkout@v4.1.1
+        with:
+          path: 'actions_temp'
+        
+      - name: 拉代码
+        uses: ./actions_temp/.github/actions/action-checkout
+        with:
+          # 参数通过创建模板的api，动态生成
+          repo_type: 'github'
+          repository: "deming-org/ios-demo"
+          # repository: "deming-org/flutter-ios-demo"
+          ref: ${{ inputs.ref }}
+          password: ${{ secrets.GH_TOKEN }}
+
+      # 参考文档：https://docs.github.com/zh/actions/deployment/deploying-xcode-applications/installing-an-apple-certificate-on-macos-runners-for-xcode-development
+      - name: 安装苹果证书和 provisioning profile
+        uses: ./actions_temp/.github/actions/action-install-apple-cert/action.yml
+        with:
+          build_certificate_base64: "${{ secrets.P12_BASE64 }}"
+          p12_password: "${{ secrets.P12_PASSWORD }}"
+          build_provision_profile_base64: "${{ secrets.MOBILEPROVISION_BASE64 }}"
+          keychain_password: "${{ secrets.KEYCHAIN_PASSWORD }}"
+
+      - name: 配置环境变量
+        run: |
+          ls -l /usr/libexec/PlistBuddy || echo -e "\033[33m PlistBuddy解析plist文件工具不存在\033[0m"
+          if [ "$type" = "flutter" ]; then
+            INFO_PLIST_PATH='ios/Runner/Info.plist'
+            BUNDLE_VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "$INFO_PLIST_PATH")
+            BUNDLE_BUILD_VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "$INFO_PLIST_PATH")
+          else
+            INFO_PLIST_PATH='Runner/Info.plist'
+            BUNDLE_VERSION="1.0.0"
+            BUNDLE_BUILD_VERSION="1"
+          fi
+          
+          echo -e "\033[33m BUNDLE_VERSION 为: $BUNDLE_VERSION \033[0m"
+          echo -e "\033[33m BUNDLE_BUILD_VERSION 为: $BUNDLE_BUILD_VERSION \033[0m"
+          
+          ipa_filename="${{ github.WORKFLOW }}_${BUNDLE_VERSION}-build-${BUNDLE_BUILD_VERSION}_$(date '+%F-%H-%M-%S').ipa"
+          echo "ipa_filename=$ipa_filename" >> "$GITHUB_ENV"
+          echo -e "\033[33m 查看设置的环境变量：ipa_filename => $ipa_filename\033[0m"
+
+      - name: 编译生成ipa
+        uses: ./actions_temp/.github/actions/action-build
+        with:
+          # 参数通过创建模板的api，动态生成
+          language_type: 'swift'
+          version: '3.13.9'
+          build_cmd: "bash build.sh ${{ env.ipa_filename }}"
+
+      - id: artifact-upload-step
+        name: 上传到Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.WORKFLOW }}
+          path: "${{ env.ipa_filename }}"
+          
+      - name: 上传到nexus
+        run: |
+          echo -e "\033[36m ipa文件名: ${ipa_filename} \033[0m"
+          curl -v -u "${{ secrets.NEXUS_USER }}":"${{ secrets.NEXUS_PWD }}" -X POST "${{ secrets.NEXUS_SERVER }}service/rest/v1/components?repository=ios-demo" -F raw.asset1=@./${ipa_filename}  -F raw.directory="${{ github.WORKFLOW }}" -F raw.asset1.filename="${ipa_filename}"  
+
+      - name: 通知
+        uses: ./actions_temp/.github/actions/action-notification/action.yml
+        with:
+          send_addr: ${{ secrets.FS_ROBOT }}
+          content: "Artifact 下载地址：https://api.github.com/repos/${{ GITHUB.REPOSITORY }}/actions/artifacts/${{ steps.artifact-upload-step.outputs.artifact-id }}\\n\\nNexus 下载地址：${{ secrets.NEXUS_SERVER }}repository/ios-demo/${{ github.WORKFLOW }}/${ipa_filename}"
+
