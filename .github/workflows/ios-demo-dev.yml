@@ -36,6 +36,9 @@ jobs:
           ref: ${{ inputs.ref }}
           password: ${{ secrets.GH_TOKEN }}
 
+      - name: 验证
+        run: pwd && ls -alt
+
       # 参考文档：https://docs.github.com/zh/actions/deployment/deploying-xcode-applications/installing-an-apple-certificate-on-macos-runners-for-xcode-development
       - name: 安装苹果证书和 provisioning profile
         uses: ./actions_temp/.github/actions/action-install-apple-cert/action.yml
@@ -86,6 +89,7 @@ jobs:
           curl -v -u "${{ secrets.NEXUS_USER }}":"${{ secrets.NEXUS_PWD }}" -X POST "${{ secrets.NEXUS_SERVER }}service/rest/v1/components?repository=ios-demo" -F raw.asset1=@./${ipa_filename}  -F raw.directory="${{ github.WORKFLOW }}" -F raw.asset1.filename="${ipa_filename}"  
 
       - name: 通知
+        if: ${{ !cancelled() }}
         uses: ./actions_temp/.github/actions/action-notification/action.yml
         with:
           send_addr: ${{ secrets.FS_ROBOT }}
