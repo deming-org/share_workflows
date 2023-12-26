@@ -117,8 +117,9 @@ jobs:
           echo -e "\033[33m 查看编译产物: ${ipa_filename} 和其他文件 \033[0m"
           ls ${ipa_filename} build/*
           
-      - name: 上传到Artifact
-        uses: actions/upload-artifact@v4.0.0
+      - id: artifact-upload-step
+        name: 上传到Artifact
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ github.WORKFLOW }}
           path: "${{ env.ipa_filename }}"
