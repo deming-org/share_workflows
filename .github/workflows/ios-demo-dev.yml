@@ -88,12 +88,14 @@ jobs:
           ls -l /usr/libexec/PlistBuddy || echo -e "\033[33m PlistBuddy解析plist文件工具不存在\033[0m"
           if [ "$type" = "flutter" ]; then
             INFO_PLIST_PATH='ios/Runner/Info.plist'
+            BUNDLE_VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "$INFO_PLIST_PATH")
+            BUNDLE_BUILD_VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "$INFO_PLIST_PATH")
           else
             INFO_PLIST_PATH='Runner/Runner/Info.plist'
+            BUNDLE_VERSION="1.0.0"
+            BUNDLE_BUILD_VERSION="1"
           fi
           
-          BUNDLE_VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "$INFO_PLIST_PATH")
-          BUNDLE_BUILD_VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "$INFO_PLIST_PATH")
           echo -e "\033[33m BUNDLE_VERSION 为: $BUNDLE_VERSION \033[0m"
           echo "\033[33m BUNDLE_BUILD_VERSION 为: $BUNDLE_BUILD_VERSION \033[0m"
           
