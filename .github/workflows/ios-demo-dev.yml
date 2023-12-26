@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
 
 env:
-  # type: "native"
-  type: "flutter"
+  type: "native"
+  # type: "flutter"
   
 jobs:
   build:
@@ -15,8 +15,8 @@ jobs:
       - name: 拉取仓库代码
         uses: actions/checkout@v4.1.1
         with: 
-          # repository: "deming-org/ios-demo"
-          repository: "deming-org/flutter-ios-demo"
+          repository: "deming-org/ios-demo"
+          # repository: "deming-org/flutter-ios-demo"
           ref: "main"
 
       # 参考文档：https://docs.github.com/zh/actions/deployment/deploying-xcode-applications/installing-an-apple-certificate-on-macos-runners-for-xcode-development
@@ -104,33 +104,7 @@ jobs:
           echo -e "\033[33m 查看设置的环境变量：ipa_filename => $ipa_filename\033[0m"
           
       - name: 编译生成ipa
-        if: ${{ env.type == 'native' }}
-        run: |
-          pwd && ls -l
-
-          echo -e "\033[33m 开始执行编译命令 \033[0m"
-          SCHEME_NAME="Runner"
-          # archive 项目
-          xcodebuild archive -workspace Runner/Runner.xcworkspace -scheme $SCHEME_NAME -configuration Release -archivePath build/Runner.xcarchive || echo "生成 xcarchive 文件失败"
-          # 导出 .ipa 文件
-          xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath build/ipa || echo "生成 ipa 文件失败"
-
-          # ipa 文件命名格式：<应用名>_<大版本号-build-小版本号>_<时间>.ipa
-          mv -f build/ipa/*.ipa  ${ipa_filename}
-          echo -e "\033[33m 查看编译产物: ${ipa_filename} 和其他文件 \033[0m"
-          ls ${ipa_filename} build/*
-          
-      - name: 编译生成ipa-flutter
-        if: ${{ env.type == 'flutter' }}
-        run: |
-          echo -e "\033[33m 开始执行编译命令 \033[0m"
-          flutter gen-l10n || echo -e "\033[33m 执行多语言失败 \033[0m"
-          flutter build ipa --release --export-options-plist="ExportOptions.plist"
-          
-          echo -e "\033[36m 查看编译产物目录\033[0m"
-          ls ./build/ios/ipa/
-          echo -e "\033[33m 产物名称变量 ipa_filename => ${ipa_filename}\033[0m"
-          mv build/ios/ipa/*.ipa  $ipa_filename
+        run: bash build.sh "$ipa_filename"
           
       - id: artifact-upload-step
         name: 上传到Artifact
