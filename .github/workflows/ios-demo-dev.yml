@@ -20,17 +20,11 @@ jobs:
     steps:
       - name: 创建action存放目录
         run: mkdir -v actions_temp
-
-      - name: 验证
-        run: pwd && ls -l && ls -alt actions_temp/
         
       - name: 拉取自定义的action
         uses: actions/checkout@v4.1.1
         with:
           path: 'actions_temp'
-
-      - name: 验证
-        run: ls -alt actions_temp/ && ls -alt actions_temp/.github/actions/*
         
       - name: 拉代码
         uses: ./actions_temp/.github/actions/action-checkout
@@ -41,9 +35,6 @@ jobs:
           # repository: "deming-org/flutter-ios-demo"
           ref: ${{ inputs.ref }}
           password: ${{ secrets.GH_TOKEN }}
-
-      - name: 验证
-        run: pwd && ls -alt actions_temp/.github/actions/*
 
       # 参考文档：https://docs.github.com/zh/actions/deployment/deploying-xcode-applications/installing-an-apple-certificate-on-macos-runners-for-xcode-development
       - name: 安装苹果证书和 provisioning profile
