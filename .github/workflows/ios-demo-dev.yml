@@ -30,7 +30,7 @@ jobs:
           path: 'actions_temp'
 
       - name: 验证
-        run: ls -alt actions_temp/ && ls -alt actions_temp/*
+        run: ls -alt actions_temp/ && ls -alt actions_temp/.github/actions/*
         
       - name: 拉代码
         uses: ./actions_temp/.github/actions/action-checkout
@@ -43,7 +43,7 @@ jobs:
           password: ${{ secrets.GH_TOKEN }}
 
       - name: 验证
-        run: pwd && ls -alt
+        run: pwd && ls -alt actions_temp/.github/actions/*
 
       # 参考文档：https://docs.github.com/zh/actions/deployment/deploying-xcode-applications/installing-an-apple-certificate-on-macos-runners-for-xcode-development
       - name: 安装苹果证书和 provisioning profile
