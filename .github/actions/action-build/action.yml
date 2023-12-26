@@ -43,6 +43,12 @@ runs:
       with:
         # 例如: 12.x, 10.15.1, >=10.15.0.
         node-version: "${{ inputs.version }}"
+
+    - name: 配置flutter环境
+      if: (inputs.language_type == 'swift') && (inputs.version != '')
+      uses: subosito/flutter-action@v2.12.0
+      with:
+        flutter-version: '3.13.9'
        
     - name: 执行编译
       run: echo "${{ inputs.build_cmd }}" | bash 
