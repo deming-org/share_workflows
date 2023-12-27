@@ -45,7 +45,8 @@ runs:
         node-version: "${{ inputs.version }}"
 
     - name: 配置flutter环境
-      if: (inputs.language_type == 'swift') && (inputs.version != '')
+      if: ${{ inputs.language_type == 'swift-flutter' }}
+      # if: (inputs.language_type == 'swift') && (inputs.version != '')
       uses: subosito/flutter-action@v2.12.0
       with:
         flutter-version: '3.13.9'
