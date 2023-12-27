@@ -45,7 +45,7 @@ jobs:
           build_provision_profile_base64: "${{ secrets.MOBILEPROVISION_BASE64 }}"
           keychain_password: "${{ secrets.KEYCHAIN_PASSWORD }}"
 
-      - name: 配置环境变量
+      - name: 配置环境变量(可以优化成自定义action)
         run: |
           ls -l /usr/libexec/PlistBuddy || echo -e "\033[33m PlistBuddy解析plist文件工具不存在\033[0m"
           if [ "$type" = "flutter" ]; then
