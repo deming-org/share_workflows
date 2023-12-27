@@ -69,7 +69,8 @@ jobs:
         uses: ./actions_temp/.github/actions/action-build
         with:
           # 参数通过创建模板的api，动态生成
-          language_type: 'swift'
+          # language_type: 'swift'
+          language_type: 'swift-flutter'
           version: '3.13.9'
           build_cmd: "bash build.sh ${{ env.ipa_filename }}"
 
