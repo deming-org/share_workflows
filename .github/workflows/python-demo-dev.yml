@@ -22,11 +22,6 @@ jobs:
         uses: actions/checkout@v4.1.1
         with:
           path: 'actions_temp'
-          
-      # - name: 拷贝action文件
-      #   run: |
-      #     mv -f actions_temp/.github  ./
-      #     rm -rf actions_temp
         
       - name: 拉代码
         # uses: ./.github/actions/action-checkout
