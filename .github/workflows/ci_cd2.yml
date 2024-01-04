@@ -15,6 +15,7 @@ jobs:
         run: |
           pwd
           echo -e "GH_TOKEN: ${{ secrets.GH_TOKEN }}"
+          
       - name: 拉代码
         uses: actions/checkout@v4.1.1
         with:
@@ -23,14 +24,14 @@ jobs:
           # token: ${{ secrets.GH_TOKEN }}
       - name: 测试
         run: ls -al
-      # - name: 执行脚本
-      #   run: bash build.sh
-      # - name: 输出
-      #   run: |
-      #     echo "开始打印"
-      #     echo -e "\033[33m ${ipa_filename} \033[0m"
-      #     echo -e "\033[33m $ipa_filename \033[0m"
-      #     echo "结束打印"
+      - name: 执行脚本
+        run: bash build.sh
+      - name: 输出
+        run: |
+          echo "开始打印"
+          echo -e "\033[33m ${ipa_filename} \033[0m"
+          echo -e "\033[33m $ipa_filename \033[0m"
+          echo "结束打印"
           
       # - name: 判断1
       #   if: ${{ env.type == 'flutter' }}
