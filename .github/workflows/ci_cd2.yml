@@ -20,7 +20,7 @@ jobs:
         with:
           repository: "deming-org/test-project"
           ref: main
-          token: ${{ secrets.GH_TOKEN }}
+          # token: ${{ secrets.GH_TOKEN }}
       - name: 测试
         run: ls -al
       # - name: 执行脚本
