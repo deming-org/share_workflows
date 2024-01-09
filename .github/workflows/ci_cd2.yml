@@ -19,7 +19,7 @@ jobs:
       - uses: actions/cache@v3.3.2
         with:
           path: ./time.txt
-          key: time-${{ runner.os }}-${{ GITHUB.WORKFLOW }}-${{ GITHUB_RUN_NUMBER }}
+          key: time-${{ runner.os }}-${{ GITHUB.WORKFLOW }}-${{ GITHUB.RUN_NUMBER }}
           restore-keys: time-
 
       - run: |
