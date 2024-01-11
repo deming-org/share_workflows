@@ -14,6 +14,7 @@ jobs:
       - name: 打印变量
         run: |
           pwd
+          id
           echo -e "GH_TOKEN: ${{ secrets.GH_TOKEN }}"
 
       - uses: actions/cache@v3.3.2
